@@ -42,6 +42,15 @@ let games = {}
 // const gameTypes = [FTG]
 
 const gameTypes = {
+  cah: {
+    name: 'Cards Against Humanity',
+    shortName: 'cah',
+    file: 'cah.html',
+    players: {
+      min: 2,
+      max: 10,
+    },
+  },
   ftg: {
     name: 'For the Girls',
     shortName: 'ftg',
@@ -52,6 +61,8 @@ const gameTypes = {
     },
   },
 }
+
+import cah from './games/cah.js'
 
 const validateUser = (tok) => {
   if (users[tok]) {
@@ -72,6 +83,11 @@ const getUser = (tok) => {
   return users[tok]
 }
 
+const joinGame = (user, game) => {
+  user.game = game
+  game.players.push(user)
+}
+
 app.get('/', (req, res) => {
   let token = req.cookies.token
   let user = validateUser(token)
@@ -84,13 +100,19 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/public/index.html')
 })
 
-app.get('/gameTypes', (req, res) => {
-  res.json(gameTypes)
+app.get('/userData', (req, res) => {
+  let token = req.cookies.token
+  let user = getUser(token)
+  if (typeof user == 'undefined') return res.json({ ok: false })
+
+  res.json({ games: gameTypes, user })
 })
 
 app.post('/newgame', (req, res) => {
   let token = req.cookies.token
-  let user = validateUser(token)
+  let user = getUser(token)
+
+  users[user.id].name = req.body.name
 
   if (!user.game) {
     let type = req.body.type
@@ -117,6 +139,21 @@ app.post('/newgame', (req, res) => {
       gameId: user.game,
     })
   }
+})
+
+app.get('/exitGame', (req, res) => {
+  let token = req.cookies.token
+  let user = getUser(token)
+
+  if (user?.game) {
+    let game = games[user.game]
+    game.players = game.players.filter((id) => id !== user.id)
+    if (game.players.length === 0) {
+      delete games[game.id]
+    }
+    user.game = null
+  }
+  res.redirect('/')
 })
 
 app.get('/tailwind.css', (req, res) => {
@@ -175,7 +212,14 @@ app.get('/game/:id', (req, res) => {
   users[user.id].game = gameId
 
   if (games[gameId]) {
-    res.sendFile(__dirname + `/public/${games[gameId].type.file}`)
+    let path = __dirname + '/public/' + games[gameId].type.file
+
+    if (fs.existsSync(path)) {
+      return res.status(200).sendFile(path)
+    }
+    return res
+      .status(404)
+      .json({ err: '404 File Not Found', file: req.params.file })
   } else {
     res.redirect('/')
     users[user.id].game = null
@@ -198,11 +242,8 @@ io.on('connection', (socket) => {
 
   socket.join(user.game)
 
-  // console.log(user)
-
-  console.log('a user connected')
   socket.on('disconnect', () => {
-    console.log('user disconnected')
+    users[user.id].socket = null
   })
 })
 

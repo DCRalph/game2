@@ -3,5 +3,5 @@
 @tailwind utilities;
 
 .gameBtn {
-  @apply w-32 h-8 rounded bg-red-500 hover:bg-red-600 text-white;
+  @apply flex w-64 justify-center p-2 rounded bg-red-500 hover:bg-red-600 disabled:bg-gray-500 text-white;
 }
