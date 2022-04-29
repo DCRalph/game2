@@ -1,3 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.gameBtn {
+  @apply w-32 h-8 rounded bg-red-500 hover:bg-red-600 text-white;
+}
