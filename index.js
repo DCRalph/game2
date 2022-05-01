@@ -83,11 +83,6 @@ const getUser = (tok) => {
   return users[tok]
 }
 
-const joinGame = (user, game) => {
-  user.game = game
-  game.players.push(user)
-}
-
 app.get('/', (req, res) => {
   let token = req.cookies.token
   let user = validateUser(token)
@@ -112,13 +107,51 @@ app.post('/newgame', (req, res) => {
   let token = req.cookies.token
   let user = getUser(token)
 
+  let type = req.body.type
+  let room = req.body.room
+
   users[user.id].name = req.body.name
 
-  if (!user.game) {
-    let type = req.body.type
+  if (room) {
+    if (games[room]) {
+      if (games[room].players.length < games[room].players.max) {
+        games[room].players.push(user.id)
+        users[user.id].game = room
+        return res.json({ ok: true, room })
+      } else {
+        return res.json({ ok: false, error: 'Room is full' })
+      }
+    } else {
+      games[room] = {
+        id: room,
+        type: gameTypes[type],
+        players: [user.id],
+        state: 'waiting',
+        turn: 0,
+      }
 
-    let game = {
+      users[user.id].game = room
+
+      return res.json({ ok: true, room })
+    }
+  } else {
+    games[room] = {
       id: nanoid(4),
+      type: gameTypes[type],
+      players: [user.id],
+      state: 'waiting',
+      turn: 0,
+    }
+
+    users[user.id].game = room
+
+    return res.json({ ok: true, room })
+  }
+
+  return
+  if (!user.game) {
+    let game = {
+      id: room || nanoid(4),
       type: gameTypes[type],
       players: [user.id],
       state: 'waiting',

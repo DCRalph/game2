@@ -1,10 +1,12 @@
 const nameBox = document.querySelector('#nameBox')
+const roomBox = document.querySelector('#roomBox')
 const gameBtns = document.querySelector('#games')
 
 const NewGame = async (type) => {
   const body = {
     type: type,
     name: nameBox.value,
+    room: roomBox.value,
   }
 
   console.log(body)

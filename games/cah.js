@@ -13,7 +13,7 @@ pack.black.forEach((card) => {
   black.push(data.black[card])
 })
 
-console.log(black)
+console.log(white)
 
 const loop = () => {
   console.log('loop')
