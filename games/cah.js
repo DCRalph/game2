@@ -33,27 +33,55 @@ class Game {
     }
     this.status = 'waiting'
 
+    this.white = this.shuffle(white)
+    this.black = this.shuffle(black)
+
     console.log('new game')
+  }
+
+  shuffle(array) {
+    let currentIndex = array.length
+    let temporaryValue
+    let randomIndex
+
+    while (0 !== currentIndex) {
+      randomIndex = Math.floor(Math.random() * currentIndex)
+      currentIndex -= 1
+      temporaryValue = array[currentIndex]
+      array[currentIndex] = array[randomIndex]
+      array[randomIndex] = temporaryValue
+    }
+    return array
   }
 
   fn() {
     console.log(69)
   }
 
-  socket(data) {
+  emit(who, data = null) {
+    console.log(who)
+    if (who == 'all') {
+      this.#io.to(this.roomid).emit('game', data)
+    } else {
+      this.#io.to(who).emit('game', data)
+    }
+  }
+
+  socket(data, user) {
     console.log(data)
 
     switch (data.cmd) {
       case 'test':
-        console.log('test')
-        io.to(this.roomid).emit('test')
+        this.emit(user.socket, { cmd: 'test' })
         break
 
-      case 'newcard':
-        console.log('newcard')
-        if (data.color == 'white') {
-          // TODO random card
-        }
+      case 'pack':
+        // if (data.color == 'white') {
+        // }
+        this.emit(user.socket, {
+          cmd: 'pack',
+          data: { white: this.white, black: this.black },
+        })
     }
   }
 }

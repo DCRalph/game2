@@ -122,11 +122,18 @@ app.post('/newgame', (req, res) => {
 
   if (room) {
     if (rooms[room]) {
-      rooms[room].users.push(user.id)
-      user.room = room
-      io.to(room).emit('newUser', {
-        user: users[user.id],
-      })
+      if (rooms[rooms].users.length >= rooms[room].game.players.max) {
+        res.json({
+          ok: false,
+          error: 'Room is full',
+        })
+      } else {
+        rooms[room].users.push(user.id)
+        user.room = room
+        io.to(room).emit('newUser', {
+          user: users[user.id],
+        })
+      }
     } else {
       let newRoom = {
         id: room,
@@ -239,7 +246,7 @@ io.on('connection', (socket) => {
   })
 
   socket.on('game', (data) => {
-    rooms[user.room].game.socket(data)
+    rooms[user.room].game.socket(data, user)
   })
 
   socket.on('disconnect', () => {
