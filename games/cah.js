@@ -13,12 +13,51 @@ pack.black.forEach((card) => {
   black.push(data.black[card])
 })
 
-console.log(white)
-
-const loop = () => {
-  console.log('loop')
+const meta = {
+  name: 'cah',
+  description: 'card against humanity',
+  version: '0.0.1',
 }
 
-export default {
-  e: 9,
+class Game {
+  #io
+  constructor(roomid, io) {
+    this.roomid = roomid
+    this.#io = io
+
+    this.name = 'Cards Against Humanity'
+    this.file = 'cah.html'
+    this.players = {
+      min: 2,
+      max: 10,
+    }
+    this.status = 'waiting'
+
+    console.log('new game')
+  }
+
+  fn() {
+    console.log(69)
+  }
+
+  socket(data) {
+    console.log(data)
+
+    switch (data.cmd) {
+      case 'test':
+        console.log('test')
+        io.to(this.roomid).emit('test')
+        break
+
+      case 'newcard':
+        console.log('newcard')
+        if (data.color == 'white') {
+          // TODO random card
+        }
+    }
+  }
 }
+
+// console.log(white)
+
+export { meta, Game }

@@ -4,20 +4,23 @@ const gameBox = document.querySelector('#gameBox')
 const joinGame = document.querySelector('#joinGame')
 const hostGame = document.querySelector('#hostGame')
 
-let games = []
-games.push('game 1')
-games.push('game 2')
+const getData = async () => {
+  const res = await fetch('/userData')
+  const data = await res.json()
 
-games.forEach((g) => {
-  let opt = document.createElement('option')
-  opt.innerText = g
-  console.log(gameBox)
-  gameBox.appendChild(opt)
-})
+  data.games.forEach((g) => {
+    let opt = document.createElement('option')
+    opt.innerText = g
+    gameBox.appendChild(opt)
+  })
 
-const NewGame = async (type) => {
+  if (data.user.name) nameBox.value = data.user.name
+}
+
+getData()
+
+const NewGame = async () => {
   const body = {
-    gameType: type,
     name: nameBox.value,
     room: roomBox.value,
     game: gameBox.value,
@@ -36,19 +39,19 @@ const NewGame = async (type) => {
   const data = await res.json()
 
   console.log(data)
+
+  if (data.ok) {
+    window.location.href = `/game/${data.room}`
+  } else {
+    alert(data.error)
+  }
 }
 
 joinGame.addEventListener('click', () => {
   if (nameBox.value.length > 0) {
-    NewGame('join')
+    NewGame()
   }
 })
-
-// const getData = async () => {
-//   const res = await fetch('/userData')
-//   const data = await res.json()
-//   return data
-// }
 
 // const data = await getData()
 // const games = data.games

@@ -23,20 +23,46 @@ app.use(express.json())
 app.use(cookieParser())
 
 let users = {}
-let rooms = {}
-let games = []
-let gamesObjs = {}
+let games = {}
 
-let files = fs.readdirSync('./games')
-for (let file of files) {
-  if (file.endsWith('.js')) {
-    let game = await import(`./games/${file}`)
-    gamesObjs[game.meta.name] = game
-    games.push(game.meta.name)
-  }
+// class FTG {
+//   constructor(roomid) {
+//     this.roomid = roomid
+
+//     this.min = 3
+//     this.max = 6
+
+//     this.players = []
+//     this.turn = 0
+
+//     this.file = 'ftg.html'
+//   }
+// }
+
+// const gameTypes = [FTG]
+
+const gameTypes = {
+  cah: {
+    name: 'Cards Against Humanity',
+    shortName: 'cah',
+    file: 'cah.html',
+    players: {
+      min: 2,
+      max: 10,
+    },
+  },
+  ftg: {
+    name: 'For the Girls',
+    shortName: 'ftg',
+    file: 'ftg.html',
+    players: {
+      min: 2,
+      max: 8,
+    },
+  },
 }
 
-// console.log(gamesObjs)
+import cah from './games/cah.js'
 
 const validateUser = (tok) => {
   if (users[tok]) {
@@ -44,7 +70,7 @@ const validateUser = (tok) => {
   } else {
     let newUser = {
       id: tok || nanoid(16),
-      room: null,
+      game: null,
       name: null,
       socket: null,
     }
@@ -57,15 +83,6 @@ const getUser = (tok) => {
   return users[tok]
 }
 
-app.get('/admin', (req, res) => {
-  let obj = {
-    users,
-    rooms,
-  }
-
-  res.json(obj)
-})
-
 app.get('/', (req, res) => {
   let token = req.cookies.token
   let user = validateUser(token)
@@ -73,13 +90,9 @@ app.get('/', (req, res) => {
     maxAge: 1000 * 60 * 60 * 24 * 365,
   })
 
-  console.log(users)
+  // console.log(users)
 
   res.sendFile(__dirname + '/public/index.html')
-})
-
-app.get('/tailwind.css', (req, res) => {
-  res.sendFile(__dirname + '/public/tailwind.css')
 })
 
 app.get('/userData', (req, res) => {
@@ -87,96 +100,113 @@ app.get('/userData', (req, res) => {
   let user = getUser(token)
   if (typeof user == 'undefined') return res.json({ ok: false })
 
-  res.json({ games, user })
+  res.json({ games: gameTypes, user })
 })
 
 app.post('/newgame', (req, res) => {
   let token = req.cookies.token
-  let user = validateUser(token)
+  let user = getUser(token)
 
-  console.log(req.body)
-
-  let gameType = req.body.game
+  let type = req.body.type
   let room = req.body.room
 
   users[user.id].name = req.body.name
 
-  if (user.room) {
-    if (rooms[user.room]) {
-      rooms[user.room].users.splice(rooms[user.room].users.indexOf(user.id), 1)
-      io.to(user.room).emit('userLeft', {
-        user: user.id,
-      })
-    }
-
-    user.room = null
-  }
-
-  if (!gamesObjs[gameType]) {
-    res.json({
-      ok: false,
-      error: 'Game not found',
-    })
-    return
-  }
-
   if (room) {
-    if (rooms[room]) {
-      rooms[room].users.push(user.id)
-      user.room = room
-      io.to(room).emit('newUser', {
-        user: users[user.id],
-      })
-    } else {
-      let newRoom = {
-        id: room,
-        vip: user.id,
-        users: [user.id],
-        game: new gamesObjs[gameType].Game(room, io),
+    if (games[room]) {
+      if (games[room].players.length < games[room].players.max) {
+        games[room].players.push(user.id)
+        users[user.id].game = room
+        return res.json({ ok: true, room })
+      } else {
+        return res.json({ ok: false, error: 'Room is full' })
       }
-      rooms[room] = newRoom
-      user.room = room
-      io.to(room).emit('newUser', {
-        user: users[user.id],
-      })
+    } else {
+      games[room] = {
+        id: room,
+        type: gameTypes[type],
+        players: [user.id],
+        state: 'waiting',
+        turn: 0,
+      }
+
+      users[user.id].game = room
+
+      return res.json({ ok: true, room })
     }
   } else {
-    let newId = nanoid(8)
-    let newRoom = {
-      id: newId,
-      vip: user.id,
-      users: [user.id],
-      game: new gamesObjs[gameType].Game(newId, io),
+    games[room] = {
+      id: nanoid(4),
+      type: gameTypes[type],
+      players: [user.id],
+      state: 'waiting',
+      turn: 0,
     }
-    rooms[newRoom.id] = newRoom
-    user.room = newRoom.id
-    io.to(newRoom.id).emit('newUser', {
-      user: users[user.id],
+
+    users[user.id].game = room
+
+    return res.json({ ok: true, room })
+  }
+
+  return
+  if (!user.game) {
+    let game = {
+      id: room || nanoid(4),
+      type: gameTypes[type],
+      players: [user.id],
+      state: 'waiting',
+      turn: 0,
+    }
+    games[game.id] = game
+    user.game = game.id
+
+    res.json({
+      gameId: game.id,
+      test: games,
+    })
+
+    // console.log(games)
+  } else {
+    res.json({
+      error: 'already in game',
+      gameId: user.game,
     })
   }
-  console.log(rooms[user.room].game.io)
-  res.json({ ok: true, room: user.room })
 })
 
 app.get('/exitGame', (req, res) => {
   let token = req.cookies.token
   let user = getUser(token)
 
-  if (user?.room) {
-    let game = rooms[user.room]
-    game.users = game.users.filter((id) => id != user.id)
-    if (game.users.length === 0) {
-      delete rooms[game.id]
+  if (user?.game) {
+    let game = games[user.game]
+    game.players = game.players.filter((id) => id !== user.id)
+    if (game.players.length === 0) {
+      delete games[game.id]
     }
-    user.room = null
+    user.game = null
   }
   res.redirect('/')
 })
 
+app.get('/tailwind.css', (req, res) => {
+  res.sendFile(__dirname + '/public/tailwind.css')
+})
+
 app.get('/roomid', (req, res) => {
   let token = req.cookies.token
-  let roomid = getUser(token)?.room || null
+  let roomid = getUser(token)?.game || null
   res.json({ roomid })
+})
+
+app.get('/admin', (req, res) => {
+  let obj = {
+    users,
+    games,
+    gameTypes,
+  }
+
+  res.json(obj)
 })
 
 app.get('/files/:file(*)', (req, res) => {
@@ -194,16 +224,28 @@ app.get('/files/:file(*)', (req, res) => {
     .json({ err: '404 File Not Found', file: req.params.file })
 })
 
+app.get('/game/', (req, res) => {
+  let token = req.cookies.token
+  let user = getUser(token)
+  if (typeof user == 'undefined') return res.redirect('/')
+
+  if (user?.game) {
+    res.redirect(`/game/${user.game}`)
+  } else {
+    res.redirect('/')
+  }
+})
+
 app.get('/game/:id', (req, res) => {
   let token = req.cookies.token
   let user = getUser(token)
   if (typeof user == 'undefined') return res.redirect('/')
 
-  const roomId = req.params.id
-  users[user.id].room = roomId
+  const gameId = user?.game || req.params.id
+  users[user.id].game = gameId
 
-  if (rooms[roomId]) {
-    let path = __dirname + '/public/' + rooms[roomId].game.file
+  if (games[gameId]) {
+    let path = __dirname + '/public/' + games[gameId].type.file
 
     if (fs.existsSync(path)) {
       return res.status(200).sendFile(path)
@@ -213,7 +255,7 @@ app.get('/game/:id', (req, res) => {
       .json({ err: '404 File Not Found', file: req.params.file })
   } else {
     res.redirect('/')
-    users[user.id].room = null
+    users[user.id].game = null
   }
 })
 
@@ -227,24 +269,14 @@ io.on('connection', (socket) => {
   })
 
   let token = cookies.token
-  let user = getUser(token)
-  if (typeof user == 'undefined') return socket.disconnect()
+  let user = validateUser(token)
 
   users[user.id].socket = socket.id
 
-  socket.join(user.room)
-
-  socket.on('ping', () => {
-    // console.log('ping', user.name)
-  })
-
-  socket.on('game', (data) => {
-    rooms[user.room].game.socket(data)
-  })
+  socket.join(user.game)
 
   socket.on('disconnect', () => {
     users[user.id].socket = null
-    socket.leave(user.room)
   })
 })
 

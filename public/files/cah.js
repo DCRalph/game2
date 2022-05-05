@@ -1,12 +1,28 @@
-// import { io } from 'https://cdn.socket.io/4.3.2/socket.io.esm.min.js'
+let roomID
 
-let res = await fetch('/roomid')
-const { roomid: ROOMID } = await res.json()
+const getID = async () => {
+  let res = await fetch('/roomid')
+  let data = await res.json()
+  roomID = data['roomid']
+}
+getID()
 
 const socket = io()
 
 socket.on('connect', () => {
-  // socket.join(ROOMID)
+  setInterval(() => {
+    socket.emit('ping')
+  }, 1000)
 
   console.log(socket.id)
 })
+
+socket.on('test', () => {
+  console.log('test')
+})
+
+const test = () => {
+  socket.emit('game', {
+    cmd: 'test',
+  })
+}
