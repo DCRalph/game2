@@ -161,7 +161,6 @@ app.post('/newgame', (req, res) => {
       user: users[user.id],
     })
   }
-  console.log(rooms[user.room].game.io)
   res.json({ ok: true, room: user.room })
 })
 
@@ -202,11 +201,12 @@ app.get('/files/:file(*)', (req, res) => {
 })
 
 app.get('/game/:id', (req, res) => {
+  const roomId = req.params.id
+
   let token = req.cookies.token
   let user = getUser(token)
   if (typeof user == 'undefined') return res.redirect('/')
 
-  const roomId = req.params.id
   users[user.id].room = roomId
 
   if (rooms[roomId]) {

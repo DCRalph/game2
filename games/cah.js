@@ -19,6 +19,12 @@ const meta = {
   version: '0.0.1',
 }
 
+class User{
+  constructor(id){
+    this.hand = []
+  }
+}
+
 class Game {
   #io
   constructor(roomid, io) {
@@ -35,6 +41,8 @@ class Game {
 
     this.white = this.shuffle(white)
     this.black = this.shuffle(black)
+
+    this.users = {}
 
     console.log('new game')
   }
@@ -82,9 +90,18 @@ class Game {
           cmd: 'pack',
           data: { white: this.white, black: this.black },
         })
+        break
+      case 'join':
+        this.emit(user.socket, {
+          cmd: 'join',
+          data: {
+            hand: this.white.splice(0, 5),
+          },
+        })
     }
   }
 }
+
 
 // console.log(white)
 

@@ -1,3 +1,5 @@
+const handBar = document.querySelector('#handBar')
+
 let roomID
 
 const getID = async () => {
@@ -17,15 +19,16 @@ socket.on('connect', () => {
   console.log(socket.id)
 })
 
-socket.on('game', (data) => {
-  console.log(data)
+////////////////////////////////////////////
 
-  switch (data.cmd) {
-    case 'test':
-      console.log('tested')
-      break
-  }
-})
+let ready = false
+let hand = []
+
+const amReady = () => {
+  let nope = false
+  nope = hand.length != 5 || nope
+  return !nope
+}
 
 const emit = (cmd, data = {}) => {
   let obj = {
@@ -40,3 +43,37 @@ const emit = (cmd, data = {}) => {
   socket.emit('game', obj)
   console.log(obj)
 }
+
+socket.on('game', (data) => {
+  console.log(data)
+
+  switch (data.cmd) {
+    case 'test':
+      console.log('tested')
+      break
+    case 'join':
+      hand = data.data.hand
+      showHand()
+      ready = amReady()
+      break
+  }
+})
+
+const showHand = () => {
+  const makeCard = (title) => {
+    return `<div class="m-4 w-full flex rounded-xl bg-white ring-4 ring-black">
+    <span class="text-3xl font-semibold px-4 py-2">${title}</span>
+  </div>`
+  }
+
+  let html = ''
+
+  hand.forEach((card) => {
+    html += makeCard(card)
+  })
+  handBar.innerHTML = html
+}
+
+// ########################################################
+
+emit('join')
