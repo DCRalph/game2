@@ -5,3 +5,8 @@
 /* .gameBtn {
   @apply flex w-64 justify-center p-2 rounded bg-red-500 hover:bg-red-600 disabled:bg-gray-500 text-white;
 } */
+
+html,
+body {
+  height: 100%;
+}

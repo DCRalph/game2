@@ -61,8 +61,8 @@ socket.on('game', (data) => {
 
 const showHand = () => {
   const makeCard = (title) => {
-    return `<div class="m-4 w-full flex rounded-xl bg-white ring-4 ring-black">
-    <span class="text-3xl font-semibold px-4 py-2">${title}</span>
+    return `<div class="m-4 w-48 shrink-0  rounded-xl bg-white ring-4 ring-black">
+    <div class="text-2xl font-semibold px-4 py-2">${title}</div>
   </div>`
   }
 

@@ -19,12 +19,6 @@ const meta = {
   version: '0.0.1',
 }
 
-class User{
-  constructor(id){
-    this.hand = []
-  }
-}
-
 class Game {
   #io
   constructor(roomid, io) {
@@ -92,16 +86,23 @@ class Game {
         })
         break
       case 'join':
-        this.emit(user.socket, {
-          cmd: 'join',
-          data: {
+        if (this.users[user.id]) {
+          this.emit(user.socket, {
+            cmd: 'join',
+            data: { hand: this.users[user.id].hand },
+          })
+        } else {
+          this.users[user.id] = {
             hand: this.white.splice(0, 5),
-          },
-        })
+          }
+          this.emit(user.socket, {
+            cmd: 'join',
+            data: { hand: this.users[user.id].hand },
+          })
+        }
     }
   }
 }
-
 
 // console.log(white)
 

@@ -122,7 +122,7 @@ app.post('/newgame', (req, res) => {
 
   if (room) {
     if (rooms[room]) {
-      if (rooms[rooms].users.length >= rooms[room].game.players.max) {
+      if (rooms[room].users.length >= rooms[room].game.players.max) {
         res.json({
           ok: false,
           error: 'Room is full',
