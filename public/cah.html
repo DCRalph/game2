@@ -22,8 +22,16 @@
       <div class="text-2xl font-semibold px-4 py-2 text-white">black card</div>
     </div>
 
-    <div class="flex justify-center mt-auto w-full bg-gray-500 h-12">
-      <div class="text-2xl font-semibold px-4 py-2 text-white">Pick a card</div>
+    <div class="flex justify-center mt-auto w-full bg-gray-500 h-12 relative">
+      <div class="text-2xl font-semibold px-4 py-2 text-white" id="actionBar">
+        Pick a card
+      </div>
+      <button
+        class="absolute top-0 right-0 flex m-2 px-2 bg-blue-500 hover:bg-blue-600 rounded h-8 justify-center items-center text-white"
+        id="submitBtn"
+      >
+        Submit
+      </button>
     </div>
 
     <div
@@ -34,6 +42,36 @@
         class="m-4 w-80 grow flex rounded-xl bg-white ring-4 ring-black"
       >
         <span class="text-4xl font-semibold px-4 py-2"> card name </span>
+      </div> -->
+
+      <!-- <div
+        class="m-4 w-48 shrink-0 rounded-xl bg-white ring-4 ring-black relative select-none"
+      >
+        <div class="text-2xl font-semibold px-4 py-2 pointer-events-none">
+          ${title}
+        </div>
+        <div
+          class="absolute inset-0 opacity-50 rounded-xl bg-green-500 pointer-events-none"
+        ></div>
+        <div
+          class="absolute inset-0 flex flex-col justify-center items-center pointer-events-none"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-20 w-20"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M5 13l4 4L19 7"
+            />
+          </svg>
+          <span class="text-3xl">${n}</span>
+        </div>
       </div> -->
     </div>
 
