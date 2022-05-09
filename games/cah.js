@@ -89,7 +89,7 @@ class Game {
         if (this.users[user.id]) {
           this.emit(user.socket, {
             cmd: 'join',
-            data: { hand: this.users[user.id].hand },
+            data: { hand: this.users[user.id].hand, status: this.status },
           })
         } else {
           this.users[user.id] = {

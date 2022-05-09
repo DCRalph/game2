@@ -55,6 +55,7 @@ socket.on('game', (data) => {
       break
     case 'join':
       hand = data.data.hand
+      
       renderHand()
       ready = amReady()
       break
