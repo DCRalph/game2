@@ -138,7 +138,7 @@ class Game {
         }
         this.emit(user.socket, {
           cmd: 'join',
-          data: this.users[user.id],
+          data: this.users[user.id], 
         })
         break
       case 'sel':
