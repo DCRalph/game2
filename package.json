@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "run": "nodemon -i 'public/*.*' -i 'games/*.*'",
     "css": "npx tailwindcss -c tailwind.config.cjs  -i ./tailwind_config.css -o ./public/tailwind.css -w"
   },
   "repository": {
@@ -19,6 +20,7 @@
   },
   "homepage": "https://github.com/DCRalph/game2#readme",
   "dependencies": {
+    "chalk": "^5.0.1",
     "cookie-parser": "^1.4.6",
     "express": "^4.18.0",
     "socket.io": "^4.5.0"

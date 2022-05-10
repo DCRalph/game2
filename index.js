@@ -137,7 +137,6 @@ app.post('/newgame', (req, res) => {
     } else {
       let newRoom = {
         id: room,
-        vip: user.id,
         users: [user.id],
         game: new gamesObjs[gameType].Game(room, io),
       }
@@ -151,7 +150,6 @@ app.post('/newgame', (req, res) => {
     let newId = nanoid(8)
     let newRoom = {
       id: newId,
-      vip: user.id,
       users: [user.id],
       game: new gamesObjs[gameType].Game(newId, io),
     }
@@ -170,10 +168,9 @@ app.get('/exitGame', (req, res) => {
 
   if (user?.room) {
     let game = rooms[user.room]
-    game.users = game.users.filter((id) => id != user.id)
-    if (game.users.length === 0) {
-      delete rooms[game.id]
-    }
+    if (game.game.leave(user)) delete rooms[user.room]
+    game.users.splice(game.users.indexOf(user.id), 1)
+
     user.room = null
   }
   res.redirect('/')
@@ -241,15 +238,20 @@ io.on('connection', (socket) => {
 
   socket.join(user.room)
 
-  socket.on('ping', () => {
-    // console.log('ping', user.name)
-  })
-
   socket.on('game', (data) => {
-    rooms[user.room].game.socket(data, user)
+    rooms[user.room]?.game.socket(data, user)
   })
 
   socket.on('disconnect', () => {
+    if (user?.room && 1 == 2) {
+      let game = rooms[user.room]
+      if (game.game.leave(user)) delete rooms[user.room]
+
+      game.users.splice(game.users.indexOf(user.id), 1)
+
+      user.room = null
+    }
+
     users[user.id].socket = null
     socket.leave(user.room)
   })

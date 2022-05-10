@@ -7,44 +7,81 @@
     <title>Cards Against Humanity</title>
 
     <link rel="stylesheet" href="/tailwind.css" />
+    <!-- <link rel="stylesheet" href="/public/tailwind.css" /> -->
   </head>
-  <body class="bg-black flex flex-col">
-    <div class="flex grow flex-col md:flex-row">
-      <div class="w-full flex border-0 md:border-r-2"></div>
+  <body class="bg-black flex flex-col min-h-screen">
+    <div
+      class="absolute overflow-x-clip select-none top-8 right-8 md:top-10 md:right-10 lg:top-12 lg:right-12 translate-x-1/2 -translate-y-1/2 h-8 md:h-12 w-48 bg-red-600 rotate-45 flex items-center justify-center font-bold text-2xl md:text-3xl lg:text-4xl text-white sora"
+    >
+      Beta
+    </div>
 
-      <div class="w-full flex border-0 md:border-l-2">
+    <div class="flex w-full h-full grow flex-col md:flex-row">
+      <div
+        class="w-full flex flex-col items-center border-b-2 md:border-b-0 md:border-r-2"
+      >
+        <div class="text-white text-4xl my-2 underline">
+          Cards Against Humanity
+        </div>
+        <div class="flex flex-col" id="infoBoard"></div>
+        <!-- <div class="text-white text-2xl my-2">Status: ${status}</div>
+
+        <div class="text-white text-2xl my-2">${users} turn</div> -->
+      </div>
+
+      <div class="w-full flex border-t-2 md:border-t-0 md:border-l-2">
         <div class="flex justify-center items-center w-full">
-          <div class="flex bg-black w-48 h-80 rounded-xl border-4 border-white">
+          <div
+            class="m-4 w-48 h-72 shrink-0 rounded-xl bg-black ring-4 ring-white relative select-none"
+          >
             <div
-              class="text-2xl flex justify-center items-center w-full font-semibold px-4 py-2 text-white"
-            >
-              Card
-            </div>
+              class="text-2xl h-full text-white font-semibold px-4 py-2 pointer-events-none"
+              id="blackCard"
+            ></div>
           </div>
         </div>
       </div>
     </div>
 
     <div class="flex justify-center mt-auto w-full bg-gray-500 h-12 relative">
-      <div class="text-2xl font-semibold px-4 py-2 text-white" id="actionBar">
-        Pick a card
+      <div
+        class="text-2xl font-semibold px-4 py-2 text-white"
+        id="actionBar"
+      ></div>
+
+      <div class="absolute top-0 left-0 h-full flex mx-2 items-center gap-2">
+        <a
+          class="flex px-2 bg-red-500 hover:bg-red-600 rounded h-8 justify-center items-center text-white"
+          href="/exitGame"
+        >
+          Leave
+        </a>
+        <button
+          class="flex px-2 bg-green-500 hover:bg-green-600 rounded h-8 justify-center items-center text-white"
+          id="startBtn"
+        >
+          Start
+        </button>
       </div>
-      <button
-        class="absolute top-0 right-0 flex m-2 px-2 bg-blue-500 hover:bg-blue-600 rounded h-8 justify-center items-center text-white"
-        id="submitBtn"
-      >
-        Submit
-      </button>
-      <a
-        class="absolute top-0 left-0 flex m-2 bg-red-500 hover:bg-red-600 rounded h-8 w-16 justify-center items-center text-white"
-        href="/exitGame"
-      >
-        Leave
-      </a>
+
+      <div class="absolute top-0 right-0 h-full flex mx-2 items-center gap-2">
+        <button
+          class="flex px-2 bg-orange-500 hover:bg-orange-600 rounded h-8 justify-center items-center text-white"
+          onclick="emit('genBlack')"
+        >
+          Gen
+        </button>
+        <button
+          class="flex px-2 bg-blue-500 hover:bg-blue-600 rounded h-8 justify-center items-center text-white"
+          id="submitBtn"
+        >
+          Submit
+        </button>
+      </div>
     </div>
 
     <div
-      class="h-80 w-full flex justify-between overflow-x-scroll"
+      class="w-full flex min-h-[20rem] justify-between overflow-x-scroll"
       id="handBar"
     >
       <!-- <div
@@ -53,8 +90,8 @@
         <span class="text-4xl font-semibold px-4 py-2"> card name </span>
       </div> -->
 
-      <!-- <div
-        class="m-4 w-48 shrink-0 rounded-xl bg-white ring-4 ring-black relative select-none"
+      <div
+        class="hidden m-4 w-48 shrink-0 rounded-xl bg-white ring-4 ring-black relative select-none"
       >
         <div class="text-2xl font-semibold px-4 py-2 pointer-events-none">
           ${title}
@@ -81,7 +118,7 @@
           </svg>
           <span class="text-3xl">${n}</span>
         </div>
-      </div> -->
+      </div>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>

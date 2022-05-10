@@ -1,10 +1,24 @@
 import { createRequire } from 'module'
+import { urlToHttpOptions } from 'url'
 const require = createRequire(import.meta.url)
-const data = require('../cah.json')
+const data = require('./cah.json')
+
+import log from '../logger.js'
 
 let pack = data.packs.find((pack) => pack.name === 'CAH Base Set')
 let white = []
 let black = []
+
+const userScema = {
+  id: '',
+  name: '',
+  ready: false,
+  hand: [],
+  selHand: [],
+  score: 0,
+  isHost: false,
+  isWinner: false,
+}
 
 pack.white.forEach((card) => {
   white.push(data.white[card])
@@ -36,7 +50,15 @@ class Game {
     this.white = this.shuffle(white)
     this.black = this.shuffle(black)
 
+    this.vip = null
+
+    this.turn = 0
+    this.round = 0
+
     this.users = {}
+    this.userArray = []
+
+    this.blackCard = null
 
     console.log('new game')
   }
@@ -61,7 +83,6 @@ class Game {
   }
 
   emit(who, data = null) {
-    console.log(who)
     if (who == 'all') {
       this.#io.to(this.roomid).emit('game', data)
     } else {
@@ -69,37 +90,61 @@ class Game {
     }
   }
 
-  socket(data, user) {
-    console.log(data)
+  emitInfo() {
+    this.emit('all', {
+      cmd: 'info',
+      data: this,
+    })
+  }
 
+  leave(user) {
+    if (this.users[user.id]) {
+      this.white = this.white.concat(this.users[user.id].hand)
+
+      delete this.users[user.id]
+      this.userArray.splice(this.userArray.indexOf(user.id), 1)
+
+      if (this.vip == user.id || this.userArray.length == 0) {
+        delete this
+        return true
+      }
+    }
+    return false
+  }
+
+  socket(data, user) {
     switch (data.cmd) {
       case 'test':
         this.emit(user.socket, { cmd: 'test' })
         break
 
-      case 'pack':
-        // if (data.color == 'white') {
-        // }
+      case 'info':
+        this.emitInfo()
+        break
+
+      case 'join':
+        console.log(user.id)
+        if (!this.users[user.id]) {
+          this.users[user.id] = { ...userScema }
+          this.users[user.id].id = user.id
+          this.users[user.id].name = user.name
+          this.users[user.id].hand = this.white.splice(0, 5)
+
+          this.userArray.push(user.id)
+          if (this.vip == null) {
+            this.vip = user.id
+          }
+          this.users[user.id].isHost = this.vip == user.id
+        }
         this.emit(user.socket, {
-          cmd: 'pack',
-          data: { white: this.white, black: this.black },
+          cmd: 'join',
+          data: this.users[user.id],
         })
         break
-      case 'join':
-        if (this.users[user.id]) {
-          this.emit(user.socket, {
-            cmd: 'join',
-            data: { hand: this.users[user.id].hand, status: this.status },
-          })
-        } else {
-          this.users[user.id] = {
-            hand: this.white.splice(0, 5),
-          }
-          this.emit(user.socket, {
-            cmd: 'join',
-            data: { hand: this.users[user.id].hand },
-          })
-        }
+        case 'genBlack':
+          this.blackCard = this.black.shift()
+          this.emitInfo()
+          break
     }
   }
 }
