@@ -176,6 +176,7 @@ handBar.addEventListener('click', (e) => {
   }
 
   renderHand()
+  emit('sel', user.selHand)
 })
 
 handBar.addEventListener('wheel', (e) => {

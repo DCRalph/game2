@@ -141,10 +141,16 @@ class Game {
           data: this.users[user.id],
         })
         break
-        case 'genBlack':
-          this.blackCard = this.black.shift()
-          this.emitInfo()
-          break
+      case 'sel':
+        if (this.users[user.id]) {
+          this.users[user.id].selHand = data.data
+        }
+        this.emitInfo()
+        break
+      case 'genBlack':
+        this.blackCard = this.black.shift()
+        this.emitInfo()
+        break
     }
   }
 }
