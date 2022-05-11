@@ -1,4 +1,5 @@
 import { createRequire } from 'module'
+import { start } from 'repl'
 import { urlToHttpOptions } from 'url'
 const require = createRequire(import.meta.url)
 const data = require('./cah.json')
@@ -57,6 +58,8 @@ class Game {
 
     this.turn = 0
     this.round = 0
+
+    this.everyoneSubmited = false
 
     this.users = {}
     this.userArray = []
@@ -144,20 +147,75 @@ class Game {
         })
         break
       case 'sel':
-        if (this.users[user.id]) {
-          this.users[user.id].selHand = data.data
-        }
+        if (!this.users[user.id]) return
+        this.users[user.id].selHand = data.data
+
         this.emitInfo()
         break
       case 'genBlack':
         this.blackCard = this.#black.shift()
         this.emitInfo()
         break
-      case 'submit':
-        if (this.users[user.id]) {
-          this.users[user.id].submited = true
-        }
+      case 'newCard':
+        if (!this.users[user.id]) return
+        if (this.userArray[this.turn] != user.id) return
+        if (this.blackCard != null) return
+        this.blackCard = this.#black.shift()
         this.emitInfo()
+        break
+      case 'ready':
+        if (!this.users[user.id]) return
+        this.users[user.id].ready = true
+        break
+      case 'start':
+        {
+          if (!this.users[user.id]) return
+
+          if (this.status != 'waiting') return
+
+          if (this.userArray.length < this.players.min) {
+            this.emit(user.socket, { cmd: 'start', data: 'not enough' })
+
+            // return
+          }
+          if (this.userArray.length > this.players.max) {
+            this.emit(user.socket, { cmd: 'start', data: 'too many' })
+
+            return
+          }
+
+          let nope = false
+          this.userArray.forEach((id) => {
+            nope = nope || !this.users[id].ready
+          })
+
+          if (nope) {
+            this.emit(user.socket, { cmd: 'start', data: 'someone not ready' })
+            return
+          }
+
+          this.status = 'playing'
+          this.emitInfo()
+        }
+        break
+      case 'submit':
+        {
+          if (!this.users[user.id]) return
+          this.users[user.id].submited = true
+
+          let nope = false
+          this.userArray.forEach((id) => {
+            if (this.userArray[this.turn] != id) {
+              nope = nope || !this.users[id].submited
+            }
+          })
+
+          if (!nope) {
+            this.everyoneSubmited = true
+          }
+
+          this.emitInfo()
+        }
         break
     }
   }

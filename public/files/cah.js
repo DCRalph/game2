@@ -7,6 +7,11 @@ const submitBtn = document.querySelector('#submitBtn')
 const infoBoard = document.querySelector('#infoBoard')
 const blackCard = document.querySelector('#blackCard')
 
+const urTurn = document.querySelector('#urTurn')
+const newCard = document.querySelector('#newCard')
+
+const model = document.querySelector('#model')
+
 let roomID = null
 
 const getID = async () => {
@@ -36,7 +41,8 @@ let user = null
 const amReady = () => {
   let nope = false
   nope = user.id == null || nope
-  return !nope
+
+  if (!nope) emit('ready')
 }
 
 const emit = (cmd, data = {}) => {
@@ -70,10 +76,19 @@ socket.on('game', (data) => {
       game = data.data
       user = data.data.users[user.id]
 
+      if (game.userArray[game.turn] == user.id) {
+        if (game.everyoneSubmited) {
+          console.log('Everyone submitted')
+
+          const model = document.querySelector('#model')
+        }
+      }
+
       renderInfoBoard()
+      renderUrTurn()
       renderBlack()
       renderHand()
-      ready = amReady()
+      amReady()
       break
   }
 })
@@ -100,6 +115,23 @@ const renderInfoBoard = () => {
   // html += makeText('User Score: ' + user.score)
 
   infoBoard.innerHTML = html
+}
+
+const renderUrTurn = () => {
+  const hide = () => {
+    urTurn.classList.add('hidden')
+  }
+  const show = () => {
+    urTurn.classList.remove('hidden')
+  }
+
+  if (game.status != 'playing') {
+    hide()
+    return
+  }
+
+  if (game.userArray[game.turn] == user.id) show()
+  else hide()
 }
 
 const renderBlack = () => {
@@ -183,6 +215,7 @@ handBar.addEventListener('click', (e) => {
   if (!clicked.includes('white-card')) return
   if (game.blackCard == null) return
   if (user.submited) return
+  if (game.userArray[game.turn] == user.id) return
   const card = parseInt(clicked.split('-')[2])
   // console.log(card)
 
@@ -207,8 +240,13 @@ startBtn.addEventListener('click', () => {
 
 submitBtn.addEventListener('click', () => {
   // if (user.selHand.length == 0) return
+  if (game.userArray[game.turn] == user.id) return
   if (user.selHand.length != game.blackCard.pick) return
   emit('submit')
+})
+
+newCard.addEventListener('click', () => {
+  emit('newCard')
 })
 
 handBar.addEventListener('wheel', (e) => {
