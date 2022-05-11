@@ -15,6 +15,7 @@ const userScema = {
   ready: false,
   hand: [],
   selHand: [],
+  submited: false,
   score: 0,
   isHost: false,
   isWinner: false,
@@ -123,9 +124,8 @@ class Game {
         break
 
       case 'join':
-        console.log(user.id)
         if (!this.users[user.id]) {
-          this.users[user.id] = { ...userScema }
+          this.users[user.id] = structuredClone(userScema)
           this.users[user.id].id = user.id
           this.users[user.id].name = user.name
           this.users[user.id].hand = this.white.splice(0, 5)
@@ -138,7 +138,7 @@ class Game {
         }
         this.emit(user.socket, {
           cmd: 'join',
-          data: this.users[user.id], 
+          data: this.users[user.id],
         })
         break
       case 'sel':
@@ -149,6 +149,12 @@ class Game {
         break
       case 'genBlack':
         this.blackCard = this.black.shift()
+        this.emitInfo()
+        break
+      case 'submit':
+        if (this.users[user.id]) {
+          this.users[user.id].submited = true
+        }
         this.emitInfo()
         break
     }

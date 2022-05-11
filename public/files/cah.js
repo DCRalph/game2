@@ -88,8 +88,11 @@ const renderInfoBoard = () => {
   }
 
   html += makeText2('Room ID', game.roomid)
+  html += makeText2('Status', game.status)
   html += makeText2('Players', game.userArray.length)
+  html += makeText2('Turn', game.users[game.userArray[game.turn]].name)
   html += makeText2('Round', game.round)
+  html += makeText2('Score', user.score)
 
   // html += makeText('Room ID: ' + roomID)
   // html += makeText('User ID: ' + user.id)
@@ -144,7 +147,7 @@ const renderHand = () => {
   }
   const makeCard = (title, i) => {
     return `<div
-    class="m-4 w-48 shrink-0 rounded-xl bg-white ring-4 ring-black relative select-none pointer-events-auto"
+    class="w-48 h-72 shrink-0 rounded-xl bg-white ring-4 ring-black relative select-none pointer-events-auto"
     id="white-card-${i}"
   >
     <div class="text-xl font-semibold px-4 py-2 pointer-events-none">${title}</div>
@@ -153,6 +156,18 @@ const renderHand = () => {
   }
 
   let html = ''
+
+  if (user.submited) {
+    html += `<div
+    class="absolute z-20 inset-0 bg-opacity-50 bg-gray-500 pointer-events-none"
+  >
+    <div
+      class="absolute z-30 text-white text-4xl inset-0 flex flex-col justify-center items-center pointer-events-none"
+    >
+      Submited
+    </div>
+  </div>`
+  }
 
   user.hand.forEach((card, i) => {
     html += makeCard(card, i)
@@ -166,20 +181,40 @@ handBar.addEventListener('click', (e) => {
   const clicked = e.target.id
   if (clicked == 'handBar') return
   if (!clicked.includes('white-card')) return
+  if (game.blackCard == null) return
+  if (user.submited) return
   const card = parseInt(clicked.split('-')[2])
   // console.log(card)
 
   if (user.selHand.includes(card)) {
     user.selHand.splice(user.selHand.indexOf(card), 1)
   } else {
-    user.selHand.push(card)
+    if (game.blackCard.pick == 1) {
+      user.selHand = [card]
+    } else {
+      if (user.selHand.length == game.blackCard?.pick) return
+      user.selHand.push(card)
+    }
   }
 
   renderHand()
   emit('sel', user.selHand)
 })
 
+startBtn.addEventListener('click', () => {
+  emit('start')
+})
+
+submitBtn.addEventListener('click', () => {
+  if (user.selHand.length == 0) return
+  emit('submit')
+})
+
 handBar.addEventListener('wheel', (e) => {
-  e.preventDefault()
-  handBar.scrollLeft += e.deltaY
+  // e.preventDefault()
+  // handBar.scrollLeft += e.deltaY
+  if (user.submited) {
+    handBar.children[0].style.left = handBar.scrollLeft + 'px'
+    handBar.children[0].style.right = -handBar.scrollLeft + 'px'
+  }
 })

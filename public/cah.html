@@ -8,8 +8,8 @@
 
     <link rel="stylesheet" href="/tailwind.css" />
   </head>
-  <body class="bg-black flex flex-col min-h-screen">
-    <div class="flex w-full h-full grow flex-col md:flex-row">
+  <body class="bg-black min-h-screen flex flex-col">
+    <div class="flex w-full grow flex-col md:flex-row">
       <div
         class="w-full flex flex-col items-center border-b-2 md:border-b-0 md:border-r-2"
       >
@@ -25,7 +25,7 @@
             class="m-4 w-48 h-72 shrink-0 rounded-xl bg-black ring-4 ring-white relative select-none"
           >
             <div
-              class="text-xl h-full text-white font-semibold px-4 py-2 pointer-events-none"
+              class="text-xl text-white font-semibold px-4 py-2 pointer-events-none"
               id="blackCard"
             ></div>
           </div>
@@ -33,10 +33,11 @@
       </div>
     </div>
 
-    <div
-      class="flex justify-center mt-auto w-full min-h-[3rem] bg-gray-500 relative"
-    >
-      <div class="text-2xl font-semibold px-4 py-2 text-white" id="actionBar">
+    <div class="flex justify-center w-full h-12 bg-gray-500 relative">
+      <div
+        class="text-lg md:text-2xl font-semibold px-4 py-2 text-white"
+        id="actionBar"
+      >
         <!-- Loading... -->
       </div>
 
@@ -74,17 +75,21 @@
     </div>
 
     <div
-      class="w-full flex min-h-[20rem] justify-between overflow-x-scroll"
+      class="w-full flex shrink-0 justify-between overflow-x-scroll relative p-4 gap-4"
       id="handBar"
     >
-      <!-- <div
-        class="m-4 w-80 grow flex rounded-xl bg-white ring-4 ring-black"
+      <div
+        class="hidden absolute z-20 w-full top-0 bottom-0 bg-opacity-50 bg-gray-500 pointer-events-none"
       >
-        <span class="text-4xl font-semibold px-4 py-2"> card name </span>
-      </div> -->
+        <div
+          class="absolute z-30 text-white text-4xl inset-0 flex flex-col justify-center items-center pointer-events-none"
+        >
+          Submited
+        </div>
+      </div>
 
       <div
-        class="hidden m-4 w-48 shrink-0 rounded-xl bg-white ring-4 ring-black relative select-none"
+        class="hidden m-4 w-96 mx-96 shrink-0 rounded-xl bg-white ring-4 ring-black relative select-none"
       >
         <div class="text-xl font-semibold px-4 py-2 pointer-events-none">
           ${title}

@@ -1,8 +1,9 @@
+const form = document.querySelector('#form')
 const nameBox = document.querySelector('#nameBox')
 const roomBox = document.querySelector('#roomBox')
 const gameBox = document.querySelector('#gameBox')
-const joinGame = document.querySelector('#joinGame')
-const hostGame = document.querySelector('#hostGame')
+// const joinGame = document.querySelector('#joinGame')
+// const hostGame = document.querySelector('#hostGame')
 
 const getData = async () => {
   const res = await fetch('/userData')
@@ -47,7 +48,8 @@ const NewGame = async () => {
   }
 }
 
-joinGame.addEventListener('click', () => {
+form.addEventListener('submit', (e) => {
+  e.preventDefault()
   if (nameBox.value.length > 0) {
     NewGame()
   }
