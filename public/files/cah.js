@@ -14,6 +14,7 @@ const newCard = document.querySelector('#newCard')
 const model = document.querySelector('#model')
 const pickBox = document.querySelector('#pickBox')
 const modelSubmitBtn = document.querySelector('#modelSubmitBtn')
+const modelQuestionCard = document.querySelector('#modelQuestionCard')
 
 let roomID = null
 
@@ -42,7 +43,6 @@ let game = null
 let user = null
 
 let modelOrder = []
-let selModel = null
 
 const shuffle = (array) => {
   let currentIndex = array.length
@@ -110,6 +110,10 @@ socket.on('game', (data) => {
         }
       }
 
+      if (game.status == 'playing') {
+        startBtn.classList.add('hidden')
+      }
+
       renderInfoBoard()
       renderUrTurn()
       renderBlack()
@@ -128,7 +132,7 @@ const renderModel = (shuffelModel = false) => {
   model.classList.remove('hidden')
 
   const makeSel = (i) => {
-    if (selModel == i) {
+    if (game.selModel == i) {
       return `<div class="absolute inset-0 opacity-50 rounded-xl bg-green-500 ring-2 ring-green-600 pointer-events-none"></div>
     <div class="absolute inset-0 flex flex-col justify-center items-center pointer-events-none">
       <svg
@@ -202,6 +206,8 @@ const renderModel = (shuffelModel = false) => {
     html += cards[modelOrder[i]]
   })
 
+  modelQuestionCard.innerHTML = game.blackCard.text
+
   pickBox.innerHTML = html
 }
 
@@ -253,7 +259,8 @@ const renderBlack = () => {
     html += `<span class="flex justify-center items-center h-full"
     >No Card</span
   >`
-    actionBar.innerHTML = `Waiting for next round...`
+    if (game.status == 'waiting') actionBar.innerHTML = `Waiting...`
+    else actionBar.innerHTML = `Waiting for next round...`
   } else {
     html += `<span class="flex h-full"
     >${game.blackCard.text}</span
@@ -351,13 +358,13 @@ pickBox.addEventListener('click', (e) => {
   if (clicked == 'pickBox') return
   if (!game.everyoneSubmited) return
   const card = parseInt(clicked.split('-')[1])
-  selModel = card
+  game.selModel = card
   renderModel()
   console.log(clicked, card)
 })
 
 modelSubmitBtn.addEventListener('click', () => {
-  emit('choose', selModel)
+  emit('choose', game.selModel)
   hideModel()
 })
 

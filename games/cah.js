@@ -65,6 +65,8 @@ class Game {
     this.users = {}
     this.userArray = []
 
+    this.selModel = null
+
     this.blackCard = null
 
     console.log('new game')
@@ -155,6 +157,13 @@ class Game {
       case 'sel':
         if (!this.users[user.id]) return
         this.users[user.id].selHand = data.data
+
+        this.emitInfo()
+        break
+      case 'selModel':
+        if (!this.users[user.id]) return
+        if (this.userArray[this.turn] != user.id) return
+        this.selModel = data.data
 
         this.emitInfo()
         break

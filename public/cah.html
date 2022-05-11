@@ -15,15 +15,19 @@
           class="w-full h-full flex items-center flex-col bg-black ring-pink-600 ring-4 rounded-xl"
         >
           <div
-            class="text-white w-full flex justify-center items-center bg-gray-800 rounded-t-xl text-2xl p-2 relative"
+            class="text-white w-full flex justify-start md:justify-center items-center bg-gray-800 rounded-t-xl text-2xl p-2 relative"
           >
-            <span>Pick whoes is the best.</span>
+            <span>Pick who is the best.</span>
             <button
               class="absolute right-0 m-2 text-lg flex px-2 bg-blue-500 hover:bg-blue-600 rounded h-8 justify-center items-center text-white"
               id="modelSubmitBtn"
             >
               Submit
             </button>
+          </div>
+          <div class="text-white text-lg p-2 border-b-2" id="modelQuestionCard">
+            Epic cool questuoin for card game reeeee qweqw qweqwe dasd gfdsdf
+            fds
           </div>
           <div
             class="w-full flex flex-wrap justify-center overflow-y-scroll relative p-4 gap-4"
@@ -86,7 +90,7 @@
 
     <div class="flex justify-center w-full h-12 bg-gray-500 relative">
       <div
-        class="text-lg md:text-2xl font-semibold px-4 py-2 text-white"
+        class="text-sm md:text-2xl font-semibold px-4 py-2 text-white"
         id="actionBar"
       >
         <!-- Loading... -->
@@ -109,12 +113,12 @@
       </div>
 
       <div class="absolute top-0 right-0 h-full flex mx-2 items-center gap-2">
-        <button
+        <!-- <button
           class="flex px-2 bg-orange-500 hover:bg-orange-600 rounded h-8 justify-center items-center text-white"
           onclick="emit('genBlack')"
         >
           Gen
-        </button>
+        </button> -->
 
         <button
           class="flex px-2 bg-blue-500 hover:bg-blue-600 rounded h-8 justify-center items-center text-white"
