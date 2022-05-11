@@ -98,7 +98,6 @@ class Game {
       cmd: 'info',
       data: this,
     })
-    console.log(this.#black.length, black.length)
   }
 
   leave(user) {
