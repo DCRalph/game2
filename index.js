@@ -166,13 +166,15 @@ app.get('/exitGame', (req, res) => {
   let token = req.cookies.token
   let user = getUser(token)
 
-  if (user?.room) {
-    let game = rooms[user.room]
-    if (game.game.leave(user)) delete rooms[user.room]
-    game.users.splice(game.users.indexOf(user.id), 1)
+  if (!user?.room) return
+  let game = rooms[user.room]
+  if (!game) return
 
-    user.room = null
-  }
+  if (game.game.leave(user)) delete rooms[user.room]
+  game.users.splice(game.users.indexOf(user.id), 1)
+
+  user.room = null
+
   res.redirect('/')
 })
 
