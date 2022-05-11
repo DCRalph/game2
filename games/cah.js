@@ -48,8 +48,8 @@ class Game {
     }
     this.status = 'waiting'
 
-    this.white = this.shuffle(white)
-    this.black = this.shuffle(black)
+    this.white = this.shuffle(structuredClone(white))
+    this.black = this.shuffle(structuredClone(black))
 
     this.vip = null
 
@@ -96,6 +96,7 @@ class Game {
       cmd: 'info',
       data: this,
     })
+    console.log(this.black.length, black.length)
   }
 
   leave(user) {
