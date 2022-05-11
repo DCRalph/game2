@@ -36,6 +36,8 @@ const meta = {
 
 class Game {
   #io
+  #white
+  #black
   constructor(roomid, io) {
     this.roomid = roomid
     this.#io = io
@@ -48,8 +50,8 @@ class Game {
     }
     this.status = 'waiting'
 
-    this.white = this.shuffle(structuredClone(white))
-    this.black = this.shuffle(structuredClone(black))
+    this.#white = this.shuffle(structuredClone(white))
+    this.#black = this.shuffle(structuredClone(black))
 
     this.vip = null
 
@@ -96,12 +98,12 @@ class Game {
       cmd: 'info',
       data: this,
     })
-    console.log(this.black.length, black.length)
+    console.log(this.#black.length, black.length)
   }
 
   leave(user) {
     if (this.users[user.id]) {
-      this.white = this.white.concat(this.users[user.id].hand)
+      this.#white = this.#white.concat(this.users[user.id].hand)
 
       delete this.users[user.id]
       this.userArray.splice(this.userArray.indexOf(user.id), 1)
@@ -129,7 +131,7 @@ class Game {
           this.users[user.id] = structuredClone(userScema)
           this.users[user.id].id = user.id
           this.users[user.id].name = user.name
-          this.users[user.id].hand = this.white.splice(0, 5)
+          this.users[user.id].hand = this.#white.splice(0, 5)
 
           this.userArray.push(user.id)
           if (this.vip == null) {
@@ -149,7 +151,7 @@ class Game {
         this.emitInfo()
         break
       case 'genBlack':
-        this.blackCard = this.black.shift()
+        this.blackCard = this.#black.shift()
         this.emitInfo()
         break
       case 'submit':
