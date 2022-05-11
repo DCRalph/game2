@@ -1,4 +1,5 @@
 const handBar = document.querySelector('#handBar')
+const handBarCards = document.querySelector('#handBarCards')
 const actionBar = document.querySelector('#actionBar')
 
 const startBtn = document.querySelector('#startBtn')
@@ -11,6 +12,8 @@ const urTurn = document.querySelector('#urTurn')
 const newCard = document.querySelector('#newCard')
 
 const model = document.querySelector('#model')
+const pickBox = document.querySelector('#pickBox')
+const modelSubmitBtn = document.querySelector('#modelSubmitBtn')
 
 let roomID = null
 
@@ -37,6 +40,24 @@ socket.on('connect', () => {
 
 let game = null
 let user = null
+
+let modelOrder = []
+let selModel = null
+
+const shuffle = (array) => {
+  let currentIndex = array.length
+  let temporaryValue
+  let randomIndex
+
+  while (0 !== currentIndex) {
+    randomIndex = Math.floor(Math.random() * currentIndex)
+    currentIndex -= 1
+    temporaryValue = array[currentIndex]
+    array[currentIndex] = array[randomIndex]
+    array[randomIndex] = temporaryValue
+  }
+  return array
+}
 
 const amReady = () => {
   let nope = false
@@ -67,6 +88,13 @@ socket.on('game', (data) => {
       console.log('Tested')
       break
 
+    case 'quit':
+      {
+        console.log('Quit')
+        window.location.href = '/'
+      }
+      break
+
     case 'join':
       // userID = data.data.id
       user = data.data
@@ -78,9 +106,7 @@ socket.on('game', (data) => {
 
       if (game.userArray[game.turn] == user.id) {
         if (game.everyoneSubmited) {
-          console.log('Everyone submitted')
-
-          const model = document.querySelector('#model')
+          renderModel(true)
         }
       }
 
@@ -88,10 +114,96 @@ socket.on('game', (data) => {
       renderUrTurn()
       renderBlack()
       renderHand()
-      amReady()
+      if (!user.ready) amReady()
       break
   }
 })
+
+const hideModel = () => {
+  model.classList.add('hidden')
+  pickBox.innerHTML = ''
+}
+
+const renderModel = (shuffelModel = false) => {
+  model.classList.remove('hidden')
+
+  const makeSel = (i) => {
+    if (selModel == i) {
+      return `<div class="absolute inset-0 opacity-50 rounded-xl bg-green-500 ring-2 ring-green-600 pointer-events-none"></div>
+    <div class="absolute inset-0 flex flex-col justify-center items-center pointer-events-none">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-20 w-20"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M5 13l4 4L19 7"
+        />
+      </svg>
+    </div>`
+    }
+    return ''
+  }
+
+  const makeInner = (answers) => {
+    let inner = ''
+    answers.forEach((text, i) => {
+      let border = i != 0 ? 'border-t-2 border-red-300' : ''
+      inner += `
+    <div
+      class="text-xl font-semibold px-4 py-2 pointer-events-none ${border}"
+    >
+      ${text}
+    </div>`
+    })
+    return inner
+  }
+
+  const makeCard = (id, answers) => {
+    return `<div
+    class="relative w-48 h-72 overflow-y-scroll bg-white ring-4 ring-black rounded-xl"
+    id="model-${id}"
+  >
+    ${makeInner(answers)}
+    ${makeSel(id)}
+  </div>`
+  }
+
+  let cards = []
+
+  game.userArray.forEach((id, i) => {
+    let thisUser = game.users[id]
+    if (thisUser.id == user.id) return
+    let answers = []
+
+    thisUser.selHand.forEach((id2) => {
+      answers.push(thisUser.hand[id2])
+    })
+
+    console.log(answers)
+    cards.push(makeCard(i, answers))
+  })
+
+  // for (let i = 0; i < 5; i++) {
+  //   cards.push(makeCard(i, ['cum', 'cum2']))
+  // }
+
+  if (shuffelModel) {
+    modelOrder = shuffle([...Array(cards.length).keys()])
+  }
+
+  let html = ''
+  cards.forEach((c, i) => {
+    html += cards[modelOrder[i]]
+  })
+
+  pickBox.innerHTML = html
+}
 
 const renderInfoBoard = () => {
   let html = ''
@@ -204,7 +316,7 @@ const renderHand = () => {
   user.hand.forEach((card, i) => {
     html += makeCard(card, i)
   })
-  handBar.innerHTML = html
+  handBarCards.innerHTML = html
 }
 
 // ########################################################
@@ -232,6 +344,21 @@ handBar.addEventListener('click', (e) => {
 
   renderHand()
   emit('sel', user.selHand)
+})
+
+pickBox.addEventListener('click', (e) => {
+  const clicked = e.target.id
+  if (clicked == 'pickBox') return
+  if (!game.everyoneSubmited) return
+  const card = parseInt(clicked.split('-')[1])
+  selModel = card
+  renderModel()
+  console.log(clicked, card)
+})
+
+modelSubmitBtn.addEventListener('click', () => {
+  emit('choose', selModel)
+  hideModel()
 })
 
 startBtn.addEventListener('click', () => {

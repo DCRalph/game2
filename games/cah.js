@@ -19,7 +19,8 @@ const userScema = {
   submited: false,
   score: 0,
   isHost: false,
-  isWinner: false,
+
+  won: [],
 }
 
 pack.white.forEach((card) => {
@@ -111,6 +112,11 @@ class Game {
       this.userArray.splice(this.userArray.indexOf(user.id), 1)
 
       if (this.vip == user.id || this.userArray.length == 0) {
+        this.emit('all', {
+          cmd: 'quit',
+          data: {},
+        })
+
         delete this
         return true
       }
@@ -213,6 +219,58 @@ class Game {
           if (!nope) {
             this.everyoneSubmited = true
           }
+
+          this.emitInfo()
+        }
+        break
+      case 'choose':
+        {
+          if (!this.users[user.id]) return
+          if (this.userArray[this.turn] != user.id) return
+          if (this.blackCard == null) return
+          if (!this.everyoneSubmited) return
+
+          this.turn++
+          if (this.turn >= this.userArray.length) this.turn = 0
+
+          this.users[this.userArray[data.data]].score++
+
+          this.everyoneSubmited = false
+
+          this.userArray.forEach((id) => {
+            this.users[id].submited = false
+
+            this.users[id].selHand.forEach((card) => {
+              this.users[id].hand.splice(card, 1)
+            })
+            if (this.users[id].hand.length != 5) {
+              this.users[id].hand.push(
+                this.#white.splice(0, 5 - this.users[id].hand.length)
+              )
+            }
+            this.users[id].selHand = []
+          })
+
+          let winnerCards = []
+          this.users[this.userArray[data.data]].selHand.forEach((id) => {
+            winnerCards.push(this.users[this.userArray[data.data]].hand[id])
+          })
+
+          this.users[this.userArray[data.data]].won.push(
+            this.blackCard,
+            winnerCards
+          )
+
+          this.round++
+          this.blackCard = null
+
+          this.emit('all', {
+            cmd: 'won',
+            data: {
+              user: this.users[this.userArray[data.data]],
+              name: this.users[this.userArray[data.data]].name,
+            },
+          })
 
           this.emitInfo()
         }

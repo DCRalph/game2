@@ -14,12 +14,33 @@
         <div
           class="w-full h-full flex items-center flex-col bg-black ring-pink-600 ring-4 rounded-xl"
         >
-          <div class="text-white text-2xl p-2">Pick whoes is the best.</div>
           <div
-            class="w-full flex shrink-0 justify-center overflow-x-scroll relative p-4 gap-4"
+            class="text-white w-full flex justify-center items-center bg-gray-800 rounded-t-xl text-2xl p-2 relative"
+          >
+            <span>Pick whoes is the best.</span>
+            <button
+              class="absolute right-0 m-2 text-lg flex px-2 bg-blue-500 hover:bg-blue-600 rounded h-8 justify-center items-center text-white"
+              id="modelSubmitBtn"
+            >
+              Submit
+            </button>
+          </div>
+          <div
+            class="w-full flex flex-wrap justify-center overflow-y-scroll relative p-4 gap-4"
             id="pickBox"
           >
-            <div class="w-48 h-72 bg-white ring-4 ring-black rounded-xl"></div>
+            <div
+              class="w-48 h-72 overflow-y-scroll bg-white ring-4 ring-black rounded-xl"
+            >
+              <div class="text-xl font-semibold px-4 py-2 pointer-events-none">
+                ${card}
+              </div>
+              <div
+                class="text-xl font-semibold px-4 py-2 pointer-events-none border-t-2"
+              >
+                ${card}
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -104,10 +125,11 @@
       </div>
     </div>
 
-    <div
-      class="w-full flex shrink-0 justify-between overflow-x-scroll relative p-4 gap-4"
-      id="handBar"
-    >
+    <div class="w-full flex shrink-0 relative" id="handBar">
+      <div
+        class="flex w-full justify-between p-4 gap-4 overflow-x-scroll"
+        id="handBarCards"
+      ></div>
       <div
         class="hidden absolute z-20 w-full top-0 bottom-0 bg-opacity-50 bg-gray-500 pointer-events-none"
       >
