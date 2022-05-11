@@ -21,13 +21,23 @@
 
       <div class="w-full flex border-t-2 md:border-t-0 md:border-l-2">
         <div class="flex justify-center items-center w-full">
-          <div
-            class="m-4 w-48 h-72 shrink-0 rounded-xl bg-black ring-4 ring-white relative select-none"
-          >
+          <div class="w-full flex flex-col items-center m-4 h-72">
+            <span class="text-2xl text-white">Its ur turn</span>
+            <button
+              class="flex px-2 bg-teal-500 hover:bg-teal-600 rounded h-8 justify-center items-center text-white"
+            >
+              New Card
+            </button>
+          </div>
+          <div class="w-full flex justify-center items-center">
             <div
-              class="text-xl text-white font-semibold px-4 py-2 pointer-events-none"
-              id="blackCard"
-            ></div>
+              class="m-4 w-48 h-72 shrink-0 rounded-xl bg-black ring-4 ring-white relative select-none"
+            >
+              <div
+                class="text-xl text-white font-semibold px-4 py-2 pointer-events-none"
+                id="blackCard"
+              ></div>
+            </div>
           </div>
         </div>
       </div>

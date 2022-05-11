@@ -206,7 +206,8 @@ startBtn.addEventListener('click', () => {
 })
 
 submitBtn.addEventListener('click', () => {
-  if (user.selHand.length == 0) return
+  // if (user.selHand.length == 0) return
+  if (user.selHand.length != game.blackCard.pick) return
   emit('submit')
 })
 
