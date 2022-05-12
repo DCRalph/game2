@@ -332,7 +332,9 @@ const renderBlack = () => {
     html += `<span class="flex h-full"
     >${game.blackCard.text}</span
   >`
-    actionBar.innerHTML = `Pick ${game.blackCard.pick} cards`
+    if (game.userArray[game.turn] == user.id)
+      actionBar.innerHTML = `Wait for players to pick...`
+    else actionBar.innerHTML = `Pick ${game.blackCard.pick} cards`
   }
 
   blackCard.innerHTML = html
