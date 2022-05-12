@@ -12,10 +12,10 @@
     <div class="fixed z-50 inset-0 hidden" id="model">
       <div class="w-full h-full p-16 backdrop-blur">
         <div
-          class="w-full h-full flex items-center flex-col bg-black ring-pink-600 ring-4 rounded-xl"
+          class="w-full h-full flex items-center flex-col bg-gray-800 ring-pink-600 ring-4 rounded-xl"
         >
           <div
-            class="text-white w-full flex justify-start md:justify-center items-center bg-gray-800 rounded-t-xl text-2xl p-2 relative"
+            class="text-white w-full flex justify-start md:justify-center items-center bg-gray-900 rounded-t-xl text-2xl p-2 relative"
           >
             <span>Pick who is the best.</span>
             <button
@@ -45,6 +45,46 @@
                 ${card}
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fixed z-50 inset-0 hidden" id="wonModel">
+      <div class="w-full h-full p-16 backdrop-blur">
+        <div
+          class="w-full flex items-center flex-col bg-gray-800 ring-lime-600 ring-4 rounded-xl"
+        >
+          <div
+            class="text-white w-full flex justify-center items-center rounded-t-xl text-2xl p-2 relative border-b-2"
+          >
+            <span id="wonModelText"></span>
+          </div>
+
+          <div
+            class="w-full flex flex-wrap justify-center overflow-y-scroll relative p-4 gap-4"
+            id="wonModelCard"
+          >
+            <!-- <div
+              class="w-48 h-72 shrink-0 rounded-xl bg-black ring-4 ring-white relative select-none"
+            >
+              <div
+                class="text-xl text-white font-semibold px-4 py-2 pointer-events-none"
+              ></div>
+            </div>
+
+            <div
+              class="w-48 h-72 overflow-y-scroll bg-white ring-4 ring-black rounded-xl"
+            >
+              <div class="text-xl font-semibold px-4 py-2 pointer-events-none">
+                ${card}
+              </div>
+              <div
+                class="text-xl font-semibold px-4 py-2 pointer-events-none border-t-2"
+              >
+                ${card}
+              </div>
+            </div> -->
           </div>
         </div>
       </div>

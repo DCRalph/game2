@@ -16,6 +16,10 @@ const pickBox = document.querySelector('#pickBox')
 const modelSubmitBtn = document.querySelector('#modelSubmitBtn')
 const modelQuestionCard = document.querySelector('#modelQuestionCard')
 
+const wonModel = document.querySelector('#wonModel')
+const wonModelText = document.querySelector('#wonModelText')
+const wonModelCard = document.querySelector('#wonModelCard')
+
 let roomID = null
 
 const getID = async () => {
@@ -43,6 +47,7 @@ let game = null
 let user = null
 
 let modelOrder = []
+let showModel = false
 
 const shuffle = (array) => {
   let currentIndex = array.length
@@ -104,10 +109,8 @@ socket.on('game', (data) => {
       game = data.data
       user = data.data.users[user.id]
 
-      if (game.userArray[game.turn] == user.id) {
-        if (game.everyoneSubmited) {
-          renderModel(true)
-        }
+      if (game.everyoneSubmited) {
+        renderModel(!showModel)
       }
 
       if (game.status == 'playing') {
@@ -120,16 +123,36 @@ socket.on('game', (data) => {
       renderHand()
       if (!user.ready) amReady()
       break
+    case 'won':
+      {
+        hideModel()
+
+        renderWonModel(
+          data.data.user.name,
+          data.data.user.won[data.data.user.won.length - 1]
+        )
+
+        setTimeout(() => {
+          hideWonModel()
+        }, 5000)
+
+        // renderWonModel('meeee', [{ text: 'black' }, ['red', 'blue', 'green']])
+      }
+      break
   }
 })
 
 const hideModel = () => {
   model.classList.add('hidden')
+  modelQuestionCard.innerHTML = ''
   pickBox.innerHTML = ''
+  showModel = false
 }
 
 const renderModel = (shuffelModel = false) => {
   model.classList.remove('hidden')
+  modelSubmitBtn.classList.remove('hidden')
+  showModel = true
 
   const makeSel = (i) => {
     if (game.selModel == i) {
@@ -157,7 +180,7 @@ const renderModel = (shuffelModel = false) => {
   const makeInner = (answers) => {
     let inner = ''
     answers.forEach((text, i) => {
-      let border = i != 0 ? 'border-t-2 border-red-300' : ''
+      let border = i != 0 ? 'border-t-2 border-gray-300' : ''
       inner += `
     <div
       class="text-xl font-semibold px-4 py-2 pointer-events-none ${border}"
@@ -182,14 +205,13 @@ const renderModel = (shuffelModel = false) => {
 
   game.userArray.forEach((id, i) => {
     let thisUser = game.users[id]
-    if (thisUser.id == user.id) return
+    if (thisUser.id == game.users[game.userArray[game.turn]].id) return
     let answers = []
 
     thisUser.selHand.forEach((id2) => {
       answers.push(thisUser.hand[id2])
     })
 
-    console.log(answers)
     cards.push(makeCard(i, answers))
   })
 
@@ -209,6 +231,51 @@ const renderModel = (shuffelModel = false) => {
   modelQuestionCard.innerHTML = game.blackCard.text
 
   pickBox.innerHTML = html
+}
+
+const hideWonModel = () => {
+  wonModel.classList.add('hidden')
+}
+
+const renderWonModel = (name, cards) => {
+  const makeInner = (answers) => {
+    let inner = ''
+    answers.forEach((text, i) => {
+      let border = i != 0 ? 'border-t-2 border-gray-300' : ''
+      inner += `
+    <div
+      class="text-xl font-semibold px-4 py-2 pointer-events-none ${border}"
+    >
+      ${text}
+    </div>`
+    })
+    return inner
+  }
+
+  const makeCard = (cards) => {
+    return `<div
+    class="w-48 h-72 shrink-0 rounded-xl bg-black ring-4 ring-white relative select-none"
+  >
+    <div
+      class="text-xl text-white font-semibold px-4 py-2 pointer-events-none"
+    >${cards[0].text}</div>
+  </div>
+
+    <div
+    class="relative w-48 h-72 overflow-y-scroll bg-white ring-4 ring-black rounded-xl"
+  >
+    ${makeInner(cards[1])}
+  </div>`
+  }
+
+  let html = ''
+
+  html += makeCard(cards)
+
+  wonModelCard.innerHTML = html
+  wonModelText.innerHTML = name
+
+  wonModel.classList.remove('hidden')
 }
 
 const renderInfoBoard = () => {
@@ -357,15 +424,18 @@ pickBox.addEventListener('click', (e) => {
   const clicked = e.target.id
   if (clicked == 'pickBox') return
   if (!game.everyoneSubmited) return
+  if (game.users[game.userArray[game.turn]].id != user.id) return
   const card = parseInt(clicked.split('-')[1])
   game.selModel = card
   renderModel()
-  console.log(clicked, card)
+  // console.log(clicked, card)
+  emit('selModel', card)
 })
 
 modelSubmitBtn.addEventListener('click', () => {
   emit('choose', game.selModel)
-  hideModel()
+  modelSubmitBtn.classList.add('hidden')
+  // hideModel()
 })
 
 startBtn.addEventListener('click', () => {

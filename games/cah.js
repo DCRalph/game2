@@ -244,8 +244,6 @@ class Game {
 
           this.users[this.userArray[data.data]].score++
 
-          this.everyoneSubmited = false
-
           let winnerCards = []
           this.users[this.userArray[data.data]].selHand.forEach((id) => {
             winnerCards.push(this.users[this.userArray[data.data]].hand[id])
@@ -272,12 +270,13 @@ class Game {
 
           this.round++
           this.blackCard = null
+          this.selModel = null
+          this.everyoneSubmited = false
 
           this.emit('all', {
             cmd: 'won',
             data: {
               user: this.users[this.userArray[data.data]],
-              name: this.users[this.userArray[data.data]].name,
             },
           })
 
