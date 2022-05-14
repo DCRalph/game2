@@ -262,7 +262,7 @@ class Game {
             })
             if (this.users[id].hand.length != 5) {
               this.users[id].hand.push(
-                this.#white.splice(0, 5 - this.users[id].hand.length)
+                ...this.#white.splice(0, 5 - this.users[id].hand.length)
               )
             }
             this.users[id].selHand = []
