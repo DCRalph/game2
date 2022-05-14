@@ -246,7 +246,7 @@ class Game {
           this.turn++
           if (this.turn >= this.userArray.length) this.turn = 0
 
-          this.users[this.userArray[data.data]]?.score++
+          this.users[this.userArray[data.data]].score++
 
           let winnerCards = []
           this.users[this.userArray[data.data]].selHand.forEach((id) => {
