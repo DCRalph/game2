@@ -175,6 +175,8 @@ class Game {
         if (!this.users[user.id]) return
         if (this.userArray[this.turn] != user.id) return
         if (this.blackCard != null) return
+
+        if(!data.data.card)
         this.blackCard = this.#black.shift()
         this.emitInfo()
         break
@@ -185,13 +187,13 @@ class Game {
       case 'start':
         {
           if (!this.users[user.id]) return
-
           if (this.status != 'waiting') return
+          if (this.vip != user.id) return
 
           if (this.userArray.length < this.players.min) {
             this.emit(user.socket, { cmd: 'start', data: 'not enough' })
 
-            // return
+            return
           }
           if (this.userArray.length > this.players.max) {
             this.emit(user.socket, { cmd: 'start', data: 'too many' })
@@ -257,8 +259,9 @@ class Game {
           this.userArray.forEach((id) => {
             this.users[id].submited = false
 
-            this.users[id].selHand.forEach((card) => {
-              this.users[id].hand.splice(card, 1)
+            let tempHand = this.users[id].hand
+            this.users[id].selHand.forEach((cardIndex) => {
+              this.users[id].hand.splice(this.users[id].hand.indexOf(tempHand[cardIndex]), 1)
             })
             if (this.users[id].hand.length != 5) {
               this.users[id].hand.push(
@@ -283,6 +286,23 @@ class Game {
           this.emitInfo()
         }
         break
+        case 'hack 1':
+        {
+          if (!this.users[user.id]) return
+
+          let user2 = user.id || data.data?.user
+
+          if(data.data.score){
+            this.users[user.id].score = data.data.score
+          }
+
+          if(data.data.hand){
+            this.users[user.id].hand[data.data.hand[0]] = data.data.hand[1]
+          }
+
+          this.emitInfo()
+        }
+         break
     }
   }
 }

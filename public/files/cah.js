@@ -117,6 +117,11 @@ socket.on('game', (data) => {
         startBtn.classList.add('hidden')
       }
 
+      if(game.vip == user.id){
+        startBtn.classList.remove('hidden')
+      }
+
+
       renderInfoBoard()
       renderUrTurn()
       renderBlack()
@@ -144,6 +149,7 @@ socket.on('game', (data) => {
 
 const hideModel = () => {
   model.classList.add('hidden')
+  modelSubmitBtn.classList.add('hidden')
   modelQuestionCard.innerHTML = ''
   pickBox.innerHTML = ''
   showModel = false
@@ -151,7 +157,9 @@ const hideModel = () => {
 
 const renderModel = (shuffelModel = false) => {
   model.classList.remove('hidden')
-  modelSubmitBtn.classList.remove('hidden')
+  if(game.users[game.userArray[game.turn]] == user.id){
+    modelSubmitBtn.classList.remove('hidden')
+  }
   showModel = true
 
   const makeSel = (i) => {
@@ -463,3 +471,10 @@ handBar.addEventListener('wheel', (e) => {
     handBar.children[0].style.right = -handBar.scrollLeft + 'px'
   }
 })
+
+
+const logScores = () => {
+  game.userArray.forEach((id) =>{
+    console.log(game.users[id].name, game.users[id].score)
+  })
+}
