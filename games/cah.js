@@ -176,8 +176,10 @@ class Game {
         if (this.userArray[this.turn] != user.id) return
         if (this.blackCard != null) return
 
-        if(!data.data.card)
-        this.blackCard = this.#black.shift()
+        if(data.data.card){
+          this.blackCard = {text: data.data.card[0], pick: data.data.card[1]}
+        } else this.blackCard = this.#black.shift()
+        
         this.emitInfo()
         break
       case 'ready':

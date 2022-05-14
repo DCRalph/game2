@@ -157,7 +157,7 @@ const hideModel = () => {
 
 const renderModel = (shuffelModel = false) => {
   model.classList.remove('hidden')
-  if(game.users[game.userArray[game.turn]] == user.id){
+  if(game.users[game.userArray[game.turn]].id == user.id){
     modelSubmitBtn.classList.remove('hidden')
   }
   showModel = true
