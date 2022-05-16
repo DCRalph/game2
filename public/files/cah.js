@@ -3,15 +3,16 @@ const handBarCards = document.querySelector('#handBarCards')
 const actionBar = document.querySelector('#actionBar')
 
 const startBtn = document.querySelector('#startBtn')
+const endBtn = document.querySelector('#endBtn')
 const submitBtn = document.querySelector('#submitBtn')
 
 const infoBoard = document.querySelector('#infoBoard')
 const blackCard = document.querySelector('#blackCard')
 
-const urTurn = document.querySelector('#urTurn')
 const newCard = document.querySelector('#newCard')
 
 const model = document.querySelector('#model')
+const modelTitle = document.querySelector('#modelTitle')
 const pickBox = document.querySelector('#pickBox')
 const modelSubmitBtn = document.querySelector('#modelSubmitBtn')
 const modelQuestionCard = document.querySelector('#modelQuestionCard')
@@ -64,13 +65,6 @@ const shuffle = (array) => {
   return array
 }
 
-const amReady = () => {
-  let nope = false
-  nope = user.id == null || nope
-
-  if (!nope) emit('ready')
-}
-
 const emit = (cmd, data = {}) => {
   let obj = {
     cmd,
@@ -105,6 +99,15 @@ socket.on('game', (data) => {
       user = data.data
       break
 
+    case 'start':
+      {
+        console.log('Start')
+        if (data.data != 'ok') {
+          alert(data.data)
+        }
+      }
+      break
+
     case 'info':
       game = data.data
       user = data.data.users[user.id]
@@ -113,29 +116,42 @@ socket.on('game', (data) => {
         renderModel(!showModel)
       }
 
-      if (game.status == 'playing') {
-        startBtn.classList.add('hidden')
+      startBtn.classList.add('hidden')
+      endBtn.classList.add('hidden')
+
+      if (game.vip == user.id) {
+        if (game.status == 'waiting') {
+          startBtn.classList.remove('hidden')
+        }
+
+        if (game.status == 'playing') {
+          endBtn.classList.remove('hidden')
+        }
       }
 
-      if(game.vip == user.id){
-        startBtn.classList.remove('hidden')
-      }
-
+      // if(game.userArray[game.turn] != user.id && game.status == 'playing', game.blackCard != null) {
+      submitBtn.classList.toggle(
+        'hidden',
+        !(
+          game.userArray[game.turn] != user.id &&
+          game.status == 'playing' &&
+          game.blackCard != null
+        )
+      )
 
       renderInfoBoard()
-      renderUrTurn()
+      renderNewCard()
       renderBlack()
       renderHand()
-      if (!user.ready) amReady()
+      if (!user.ready) emit('ready')
       break
     case 'won':
       {
         hideModel()
 
-        renderWonModel(
-          data.data.user.name,
-          data.data.user.won[data.data.user.won.length - 1]
-        )
+        let wonUser = game.users[data.data.user]
+
+        renderWonModel(wonUser.name, wonUser.won[wonUser.won.length - 1])
 
         setTimeout(() => {
           hideWonModel()
@@ -157,8 +173,14 @@ const hideModel = () => {
 
 const renderModel = (shuffelModel = false) => {
   model.classList.remove('hidden')
-  if(game.users[game.userArray[game.turn]].id == user.id){
+  if (game.users[game.userArray[game.turn]].id == user.id) {
     modelSubmitBtn.classList.remove('hidden')
+
+    modelTitle.innerHTML = 'Pick the best answer.'
+  } else {
+    modelTitle.innerHTML = `${
+      game.users[game.userArray[game.turn]].name
+    } is picking.`
   }
   showModel = true
 
@@ -246,6 +268,8 @@ const hideWonModel = () => {
 }
 
 const renderWonModel = (name, cards) => {
+  console.log(cards)
+
   const makeInner = (answers) => {
     let inner = ''
     answers.forEach((text, i) => {
@@ -287,35 +311,121 @@ const renderWonModel = (name, cards) => {
 }
 
 const renderInfoBoard = () => {
-  let html = ''
-  const makeText = (text) => {
-    return `<div class="text-white text-2xl my-2">${text}</div>`
-  }
-  const makeText2 = (t1, t2) => {
-    return `<div class="text-white text-2xl my-2"><span class="font-bold">${t1}:</span> ${t2}</div>`
-  }
+  let extraInfo = [
+    ['Room ID', game.roomid],
+    ['Round', game.round],
+  ]
 
-  html += makeText2('Room ID', game.roomid)
-  html += makeText2('Status', game.status)
-  html += makeText2('Players', game.userArray.length)
-  html += makeText2('Turn', game.users[game.userArray[game.turn]].name)
-  html += makeText2('Round', game.round)
-  html += makeText2('Score', user.score)
+  let svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+  svg.setAttribute('viewBox', '0 0 576 512')
+  svg.setAttribute('class', 'h-6 w-6 text-yellow-500')
+  let path = document.createElementNS('http://www.w3.org/2000/svg', 'path')
+  path.setAttribute(
+    'd',
+    'M576 136c0 22.09-17.91 40-40 40-.248 0-.4551-.1266-.7031-.1305l-50.52 277.9C482 468.9 468.8 480 453.3 480H122.7c-15.46 0-28.72-11.06-31.48-26.27L40.71 175.9C40.46 175.9 40.25 176 39.1 176c-22.09 0-40-17.91-40-40S17.91 96 39.1 96s40 17.91 40 40c0 8.998-3.521 16.89-8.537 23.57l89.63 71.7c15.91 12.73 39.5 7.544 48.61-10.68l57.6-115.2C255.1 98.34 247.1 86.34 247.1 72C247.1 49.91 265.9 32 288 32s39.1 17.91 39.1 40c0 14.34-7.963 26.34-19.3 33.4l57.6 115.2c9.111 18.22 32.71 23.4 48.61 10.68l89.63-71.7C499.5 152.9 496 144.1 496 136C496 113.9 513.9 96 536 96S576 113.9 576 136z'
+  )
+  path.setAttribute('fill', 'currentColor')
+  svg.appendChild(path)
 
-  // html += makeText('Room ID: ' + roomID)
-  // html += makeText('User ID: ' + user.id)
-  // html += makeText('User Name: ' + user.name)
-  // html += makeText('User Score: ' + user.score)
+  let table1, table2, tbody, tr, th, td, span
 
-  infoBoard.innerHTML = html
+  table1 = document.createElement('table')
+  table1.classList.add('table-auto', 'rounded-lg', 'bg-white', 'w-64')
+
+  thead = document.createElement('thead')
+  tr = document.createElement('tr')
+  th = document.createElement('th')
+
+  th.classList.add('py-2')
+  th.innerHTML = 'Name'
+  tr.appendChild(th)
+
+  th = document.createElement('th')
+
+  th.classList.add('py-2', 'border-l-2')
+  th.innerHTML = 'Score'
+  tr.appendChild(th)
+
+  thead.appendChild(tr)
+  table1.appendChild(thead)
+  tbody = document.createElement('tbody')
+
+  game.userArray.forEach((userid, index) => {
+    let User = game.users[userid]
+
+    tr = document.createElement('tr')
+    tr.classList.add('border-t-2')
+    td = document.createElement('td')
+    td.classList.add('px-4', 'py-2', 'flex', 'items-center', 'gap-2')
+    if (User.vip) {
+      // td.innerHTML += svg2
+      td.appendChild(svg.cloneNode(true))
+    }
+
+    span = document.createElement('span')
+    if (game.turn == index) span.classList.add('text-red-500')
+    else if (User.submited) span.classList.add('text-green-500')
+
+    span.innerHTML = User.name
+    td.appendChild(span)
+    tr.appendChild(td)
+
+    th = document.createElement('td')
+    th.classList.add('px-4', 'py-2', 'border-l-2', 'text-center')
+    th.innerHTML = User.score
+    tr.appendChild(th)
+    tbody.appendChild(tr)
+  })
+
+  table1.appendChild(tbody)
+
+  table2 = document.createElement('table')
+  table2.classList.add('table-auto', 'rounded-lg', 'bg-white', 'w-64')
+
+  thead = document.createElement('thead')
+  tr = document.createElement('tr')
+  th = document.createElement('th')
+
+  th.classList.add('w-1/2')
+  tr.appendChild(th)
+  thead.appendChild(tr)
+  table2.appendChild(thead)
+
+  tbody = document.createElement('tbody')
+
+  extraInfo.forEach((info, index) => {
+    tr = document.createElement('tr')
+
+    if (index > 0) tr.classList.add('border-t-2')
+    td = document.createElement('td')
+    td.classList.add('px-4', 'py-2', 'flex', 'items-center', 'gap-2')
+    span = document.createElement('span')
+    span.innerHTML = info[0]
+    td.appendChild(span)
+    tr.appendChild(td)
+
+    td = document.createElement('td')
+    td.classList.add('px-4', 'py-2', 'border-l-2', 'text-center')
+    td.innerHTML = info[1]
+    tr.appendChild(td)
+    tbody.appendChild(tr)
+  })
+
+  table2.appendChild(tbody)
+
+  infoBoard.innerHTML = ''
+  infoBoard.appendChild(table1)
+  infoBoard.appendChild(table2)
+
+  // infoBoard.innerHTML = html
 }
 
-const renderUrTurn = () => {
+const renderNewCard = () => {
   const hide = () => {
-    urTurn.classList.add('hidden')
+    newCard.classList.add('hidden')
   }
   const show = () => {
-    urTurn.classList.remove('hidden')
+    newCard.classList.remove('hidden')
   }
 
   if (game.status != 'playing') {
@@ -323,7 +433,7 @@ const renderUrTurn = () => {
     return
   }
 
-  if (game.userArray[game.turn] == user.id) show()
+  if (game.userArray[game.turn] == user.id && game.blackCard == null) show()
   else hide()
 }
 
@@ -452,6 +562,10 @@ startBtn.addEventListener('click', () => {
   emit('start')
 })
 
+endBtn.addEventListener('click', () => {
+  emit('end')
+})
+
 submitBtn.addEventListener('click', () => {
   // if (user.selHand.length == 0) return
   if (game.userArray[game.turn] == user.id) return
@@ -472,9 +586,8 @@ handBar.addEventListener('wheel', (e) => {
   }
 })
 
-
 const logScores = () => {
-  game.userArray.forEach((id) =>{
+  game.userArray.forEach((id) => {
     console.log(game.users[id].name, game.users[id].score)
   })
 }

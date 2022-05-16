@@ -18,7 +18,7 @@ const userScema = {
   selHand: [],
   submited: false,
   score: 0,
-  isHost: false,
+  vip: false,
 
   won: [],
 }
@@ -68,8 +68,6 @@ class Game {
     this.selModel = null
 
     this.blackCard = null
-
-    console.log('new game')
   }
 
   shuffle(array) {
@@ -116,7 +114,6 @@ class Game {
       if (this.vip == user.id || this.userArray.length == 0) {
         this.emit('all', {
           cmd: 'quit',
-          data: {},
         })
 
         delete this
@@ -147,7 +144,7 @@ class Game {
           if (this.vip == null) {
             this.vip = user.id
           }
-          this.users[user.id].isHost = this.vip == user.id
+          this.users[user.id].vip = this.vip == user.id
         }
         this.emit(user.socket, {
           cmd: 'join',
@@ -171,15 +168,14 @@ class Game {
         this.blackCard = this.#black.shift()
         this.emitInfo()
         break
-      // case 'newCard':
-      //   if (!this.users[user.id]) return
-      //   if (this.userArray[this.turn] != user.id) return
-      //   if (this.blackCard != null) return
+      case 'newCard':
+        if (!this.users[user.id]) return
+        if (this.userArray[this.turn] != user.id) return
+        if (this.blackCard != null) return
 
-      //   if(!data.data.card)
-      //   this.blackCard = this.#black.shift()
-      //   this.emitInfo()
-      //   break
+        this.blackCard = this.#black.shift()
+        this.emitInfo()
+        break
       case 'ready':
         if (!this.users[user.id]) return
         this.users[user.id].ready = true
@@ -191,12 +187,17 @@ class Game {
           if (this.vip != user.id) return
 
           if (this.userArray.length < this.players.min) {
-            this.emit(user.socket, { cmd: 'start', data: 'not enough' })
-
-            return
+            // this.emit(user.socket, {
+            //   cmd: 'start',
+            //   data: 'Not enough players!',
+            // })
+            // return
           }
           if (this.userArray.length > this.players.max) {
-            this.emit(user.socket, { cmd: 'start', data: 'too many' })
+            this.emit(user.socket, {
+              cmd: 'start',
+              data: 'Too many players! how tf',
+            })
 
             return
           }
@@ -207,10 +208,16 @@ class Game {
           })
 
           if (nope) {
-            this.emit(user.socket, { cmd: 'start', data: 'someone not ready' })
+            this.emit(user.socket, {
+              cmd: 'start',
+              data: 'Someone not ready. Try again',
+            })
             return
           }
 
+          this.emit(user.socket, { cmd: 'start', data: 'ok' })
+
+          this.blackCard = this.#black.shift()
           this.status = 'playing'
           this.emitInfo()
         }
@@ -261,7 +268,10 @@ class Game {
 
             let tempHand = this.users[id].hand
             this.users[id].selHand.forEach((cardIndex) => {
-              this.users[id].hand.splice(this.users[id].hand.indexOf(tempHand[cardIndex]), 1)
+              this.users[id].hand.splice(
+                this.users[id].hand.indexOf(tempHand[cardIndex]),
+                1
+              )
             })
             if (this.users[id].hand.length != 5) {
               this.users[id].hand.push(
@@ -276,33 +286,35 @@ class Game {
           this.selModel = null
           this.everyoneSubmited = false
 
+          this.blackCard = this.#black.shift()
+
+          this.emitInfo()
+
           this.emit('all', {
             cmd: 'won',
             data: {
-              user: this.users[this.userArray[data.data]],
+              user: this.userArray[data.data],
             },
           })
-
-          this.emitInfo()
         }
         break
-        case 'hack 1':
+      case 'hack 1':
         {
           if (!this.users[user.id]) return
 
           let user2 = user.id || data.data?.user
 
-          if(data.data.score){
+          if (data.data.score) {
             this.users[user.id].score = data.data.score
           }
 
-          if(data.data.hand){
+          if (data.data.hand) {
             this.users[user.id].hand[data.data.hand[0]] = data.data.hand[1]
           }
 
           this.emitInfo()
         }
-         break
+        break
     }
   }
 }

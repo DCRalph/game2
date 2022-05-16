@@ -73,7 +73,7 @@ app.get('/', (req, res) => {
     maxAge: 1000 * 60 * 60 * 24 * 365,
   })
 
-  console.log(users)
+  // console.log(users)
 
   res.sendFile(__dirname + '/public/index.html')
 })
@@ -94,7 +94,7 @@ app.post('/newgame', (req, res) => {
   let token = req.cookies.token
   let user = validateUser(token)
 
-  console.log(req.body)
+  // console.log(req.body)
 
   let gameType = req.body.game
   let room = req.body.room
