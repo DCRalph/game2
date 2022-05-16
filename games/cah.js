@@ -171,17 +171,15 @@ class Game {
         this.blackCard = this.#black.shift()
         this.emitInfo()
         break
-      case 'newCard':
-        if (!this.users[user.id]) return
-        if (this.userArray[this.turn] != user.id) return
-        if (this.blackCard != null) return
+      // case 'newCard':
+      //   if (!this.users[user.id]) return
+      //   if (this.userArray[this.turn] != user.id) return
+      //   if (this.blackCard != null) return
 
-        if(data.data.card){
-          this.blackCard = {text: data.data.card[0], pick: data.data.card[1]}
-        } else this.blackCard = this.#black.shift()
-        
-        this.emitInfo()
-        break
+      //   if(!data.data.card)
+      //   this.blackCard = this.#black.shift()
+      //   this.emitInfo()
+      //   break
       case 'ready':
         if (!this.users[user.id]) return
         this.users[user.id].ready = true
