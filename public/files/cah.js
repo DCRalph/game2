@@ -21,15 +21,6 @@ const wonModel = document.querySelector('#wonModel')
 const wonModelText = document.querySelector('#wonModelText')
 const wonModelCard = document.querySelector('#wonModelCard')
 
-let roomID = null
-
-const getID = async () => {
-  let res = await fetch('/roomid')
-  let data = await res.json()
-  roomID = data['roomid']
-}
-getID()
-
 const socket = io()
 
 socket.on('connect', () => {
@@ -125,7 +116,7 @@ socket.on('game', (data) => {
         }
 
         if (game.status == 'playing') {
-          endBtn.classList.remove('hidden')
+          // endBtn.classList.remove('hidden')
         }
       }
 

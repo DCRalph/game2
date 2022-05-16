@@ -187,11 +187,11 @@ class Game {
           if (this.vip != user.id) return
 
           if (this.userArray.length < this.players.min) {
-            // this.emit(user.socket, {
-            //   cmd: 'start',
-            //   data: 'Not enough players!',
-            // })
-            // return
+            this.emit(user.socket, {
+              cmd: 'start',
+              data: 'Not enough players!',
+            })
+            return
           }
           if (this.userArray.length > this.players.max) {
             this.emit(user.socket, {
