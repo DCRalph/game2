@@ -14,7 +14,7 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 const PORT = 3001
-const VERSION = '1.2.2'
+const VERSION = '1.2.3'
 
 const app = express()
 const httpServer = createServer(app)
