@@ -200,8 +200,10 @@ app.post('/newgame', (req, res) => {
       users[userId].room = null
     })
 
+    rooms[roomid].timer.stop()
+    delete rooms[roomid].timer
     delete rooms[roomid]
-  }, 1000 * 60 * 5)
+  }, 1000 * 10)
 
   res.json({ ok: true, room: user.room })
 })
