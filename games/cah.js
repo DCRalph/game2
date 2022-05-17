@@ -155,6 +155,8 @@ class Game {
         delete this
         return true
       }
+
+      this.emitInfo()
     }
     return false
   }

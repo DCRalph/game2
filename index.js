@@ -135,9 +135,6 @@ app.post('/newgame', (req, res) => {
   if (user.room) {
     if (rooms[user.room]) {
       rooms[user.room].users.splice(rooms[user.room].users.indexOf(user.id), 1)
-      io.to(user.room).emit('userLeft', {
-        user: user.id,
-      })
     }
 
     user.room = null
@@ -146,7 +143,7 @@ app.post('/newgame', (req, res) => {
   if (!gamesObjs[gameType]) {
     res.json({
       ok: false,
-      error: 'Game not found',
+      error: 'Game type not found',
     })
     return
   }
@@ -158,12 +155,14 @@ app.post('/newgame', (req, res) => {
           ok: false,
           error: 'Room is full',
         })
+      } else if (rooms[room].game.status != 'waiting') {
+        res.json({
+          ok: false,
+          error: 'Game is already started',
+        })
       } else {
         rooms[room].users.push(user.id)
         user.room = room
-        io.to(room).emit('newUser', {
-          user: users[user.id],
-        })
       }
     } else {
       let newRoom = {
