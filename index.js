@@ -14,6 +14,7 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 const PORT = 3001
+const VERSION = '1.2.0'
 
 const app = express()
 const httpServer = createServer(app)
@@ -57,6 +58,36 @@ const getUser = (tok) => {
   return users[tok]
 }
 
+class Timer {
+  #timer
+  constructor(fn, t, state = true) {
+    this.fn = fn
+    this.t = t
+    this.state = state
+    if (this.state) this.#timer = setInterval(fn, t)
+  }
+
+  stop = () => {
+    if (this.state) {
+      this.state = false
+      clearInterval(this.#timer)
+    }
+  }
+
+  start = () => {
+    if (!this.state) {
+      this.state = true
+      this.#timer = setInterval(this.fn, this.t)
+    }
+  }
+
+  reset = (nt = this.t) => {
+    this.t = nt
+    this.stop()
+    this.start()
+  }
+}
+
 app.get('/admin', (req, res) => {
   let obj = {
     users,
@@ -87,7 +118,7 @@ app.get('/userData', (req, res) => {
   let user = getUser(token)
   if (typeof user == 'undefined') return res.json({ ok: false })
 
-  res.json({ games, user })
+  res.json({ version: VERSION, games, user })
 })
 
 app.post('/newgame', (req, res) => {
@@ -139,6 +170,7 @@ app.post('/newgame', (req, res) => {
         id: room,
         users: [user.id],
         game: new gamesObjs[gameType].Game(room, io),
+        timer: null,
       }
       rooms[room] = newRoom
       user.room = room
@@ -152,6 +184,7 @@ app.post('/newgame', (req, res) => {
       id: newId,
       users: [user.id],
       game: new gamesObjs[gameType].Game(newId, io),
+      timer: null,
     }
     rooms[newRoom.id] = newRoom
     user.room = newRoom.id
@@ -159,6 +192,18 @@ app.post('/newgame', (req, res) => {
       user: users[user.id],
     })
   }
+
+  rooms[user.room].timer = new Timer(() => {
+    let roomid = user.room
+    rooms[roomid]?.game.terminate()
+
+    rooms[roomid].users.forEach((userId) => {
+      users[userId].room = null
+    })
+
+    delete rooms[roomid]
+  }, 1000 * 60 * 5)
+
   res.json({ ok: true, room: user.room })
 })
 
@@ -242,6 +287,7 @@ io.on('connection', (socket) => {
 
   socket.on('game', (data) => {
     rooms[user.room]?.game.socket(data, user)
+    rooms[user.room]?.timer.reset()
   })
 
   socket.on('disconnect', () => {

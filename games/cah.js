@@ -1,14 +1,30 @@
+import fs from 'fs'
 import { createRequire } from 'module'
-import { start } from 'repl'
-import { urlToHttpOptions } from 'url'
 const require = createRequire(import.meta.url)
-const data = require('./cah.json')
+const allCards = require('./cah.json')
 
 import log from '../logger.js'
 
-let pack = data.packs.find((pack) => pack.name === 'CAH Base Set')
-let white = []
-let black = []
+let Packs = {}
+
+allCards.packs.forEach((pack) => {
+  let white = []
+  let black = []
+
+  pack.white.forEach((card) => {
+    white.push(allCards.white[card])
+  })
+  pack.black.forEach((card) => {
+    black.push(allCards.black[card])
+  })
+
+  Packs[pack.name] = {
+    white: white,
+    black: black,
+  }
+
+  // log.info(`Loaded ${pack.name}`)
+})
 
 const userScema = {
   id: '',
@@ -19,21 +35,13 @@ const userScema = {
   submited: false,
   score: 0,
   vip: false,
-
   won: [],
 }
-
-pack.white.forEach((card) => {
-  white.push(data.white[card])
-})
-pack.black.forEach((card) => {
-  black.push(data.black[card])
-})
 
 const meta = {
   name: 'cah',
   description: 'card against humanity',
-  version: '0.0.1',
+  version: '1.0.0',
 }
 
 class Game {
@@ -52,8 +60,25 @@ class Game {
     }
     this.status = 'waiting'
 
-    this.#white = this.shuffle(structuredClone(white))
-    this.#black = this.shuffle(structuredClone(black))
+    let packsUsed = ['CAH Base Set', 'Hilarious!']
+
+    let allWhite = []
+    let allBlack = []
+
+    packsUsed.forEach((pack) => {
+      allWhite = allWhite.concat(Packs[pack].white)
+      allBlack = allBlack.concat(Packs[pack].black)
+    })
+
+    // console.log(allWhite.length, allBlack.length)
+
+    allWhite = allWhite.filter((item, pos) => allWhite.indexOf(item) == pos)
+    allBlack = allBlack.filter((item, pos) => allBlack.indexOf(item) == pos)
+
+    // console.log(allWhite.length, allBlack.length)
+
+    this.#white = this.shuffle(allWhite)
+    this.#black = this.shuffle(allBlack)
 
     this.vip = null
 
@@ -100,8 +125,19 @@ class Game {
   emitInfo() {
     this.emit('all', {
       cmd: 'info',
-      data: this,
+      data: {
+        ...this,
+        whiteLen: this.#white.length,
+        blackLen: this.#black.length,
+      },
     })
+  }
+
+  terminate() {
+    this.emit('all', {
+      cmd: 'quit',
+    })
+    delete this
   }
 
   leave(user) {
@@ -247,6 +283,7 @@ class Game {
           if (this.userArray[this.turn] != user.id) return
           if (this.blackCard == null) return
           if (!this.everyoneSubmited) return
+          if (data.data == null) return
 
           this.turn++
           if (this.turn >= this.userArray.length) this.turn = 0

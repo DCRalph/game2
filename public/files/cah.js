@@ -259,8 +259,6 @@ const hideWonModel = () => {
 }
 
 const renderWonModel = (name, cards) => {
-  console.log(cards)
-
   const makeInner = (answers) => {
     let inner = ''
     answers.forEach((text, i) => {
@@ -305,18 +303,42 @@ const renderInfoBoard = () => {
   let extraInfo = [
     ['Room ID', game.roomid],
     ['Round', game.round],
+    ['White Cards', game.whiteLen],
+    ['Black Cards', game.blackLen],
   ]
+
+  //   <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+  //   <path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+  // </svg>
+
+  let path
 
   let svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
   svg.setAttribute('viewBox', '0 0 576 512')
   svg.setAttribute('class', 'h-6 w-6 text-yellow-500')
-  let path = document.createElementNS('http://www.w3.org/2000/svg', 'path')
+  path = document.createElementNS('http://www.w3.org/2000/svg', 'path')
   path.setAttribute(
     'd',
     'M576 136c0 22.09-17.91 40-40 40-.248 0-.4551-.1266-.7031-.1305l-50.52 277.9C482 468.9 468.8 480 453.3 480H122.7c-15.46 0-28.72-11.06-31.48-26.27L40.71 175.9C40.46 175.9 40.25 176 39.1 176c-22.09 0-40-17.91-40-40S17.91 96 39.1 96s40 17.91 40 40c0 8.998-3.521 16.89-8.537 23.57l89.63 71.7c15.91 12.73 39.5 7.544 48.61-10.68l57.6-115.2C255.1 98.34 247.1 86.34 247.1 72C247.1 49.91 265.9 32 288 32s39.1 17.91 39.1 40c0 14.34-7.963 26.34-19.3 33.4l57.6 115.2c9.111 18.22 32.71 23.4 48.61 10.68l89.63-71.7C499.5 152.9 496 144.1 496 136C496 113.9 513.9 96 536 96S576 113.9 576 136z'
   )
   path.setAttribute('fill', 'currentColor')
   svg.appendChild(path)
+
+  let svg2 = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+  svg2.setAttribute('viewBox', '0 0 24 24')
+  svg2.setAttribute('class', 'h-6 w-6 text-yellow-500')
+  svg2.setAttribute('fill', 'none')
+  svg2.setAttribute('stroke', 'currentColor')
+  svg2.setAttribute('stroke-width', '2')
+  path = document.createElementNS('http://www.w3.org/2000/svg', 'path')
+  path.setAttribute(
+    'd',
+    'M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z'
+  )
+  path.setAttribute('fill', 'currentColor')
+  path.setAttribute('stroke-linecap', 'round')
+  path.setAttribute('stroke-linejoin', 'round')
+  svg2.appendChild(path)
 
   let table1, table2, tbody, tr, th, td, span
 
@@ -341,23 +363,27 @@ const renderInfoBoard = () => {
   table1.appendChild(thead)
   tbody = document.createElement('tbody')
 
-  game.userArray.forEach((userid, index) => {
-    let User = game.users[userid]
+  let users = Object.values(game.users)
+  users.sort((a, b) => {
+    return b.score - a.score
+  })
 
+  users.forEach((User) => {
     tr = document.createElement('tr')
     tr.classList.add('border-t-2')
     td = document.createElement('td')
     td.classList.add('px-4', 'py-2', 'flex', 'items-center', 'gap-2')
     if (User.vip) {
-      // td.innerHTML += svg2
       td.appendChild(svg.cloneNode(true))
+    } else if (User.id == user.id) {
+      td.appendChild(svg2.cloneNode(true))
     }
 
     span = document.createElement('span')
-    if (game.turn == index) span.classList.add('text-red-500')
+    if (game.userArray[game.turn] == User.id) span.classList.add('text-red-500')
     else if (User.submited) span.classList.add('text-green-500')
 
-    span.innerHTML = User.name
+    span.innerText = User.name
     td.appendChild(span)
     tr.appendChild(td)
 
@@ -443,7 +469,10 @@ const renderBlack = () => {
   >`
     if (game.userArray[game.turn] == user.id)
       actionBar.innerHTML = `Wait for players to pick...`
-    else actionBar.innerHTML = `Pick ${game.blackCard.pick} cards`
+    else
+      actionBar.innerHTML = `Pick ${game.blackCard.pick} card${
+        game.blackCard.pick > 1 ? 's' : ''
+      }`
   }
 
   blackCard.innerHTML = html
@@ -544,6 +573,7 @@ pickBox.addEventListener('click', (e) => {
 })
 
 modelSubmitBtn.addEventListener('click', () => {
+  if (game.selModel == null) return
   emit('choose', game.selModel)
   modelSubmitBtn.classList.add('hidden')
   // hideModel()

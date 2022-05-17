@@ -5,9 +5,13 @@ const gameBox = document.querySelector('#gameBox')
 // const joinGame = document.querySelector('#joinGame')
 // const hostGame = document.querySelector('#hostGame')
 
+const version = document.querySelector('#version')
+
 const getData = async () => {
   const res = await fetch('/userData')
   const data = await res.json()
+
+  version.innerHTML = 'V' + data.version
 
   data.games.forEach((g) => {
     let opt = document.createElement('option')
