@@ -177,7 +177,7 @@ app.post('/newgame', (req, res) => {
         rooms[room].users.push(user.id)
         user.room = room
       }
-    } else {
+    } else if(gameType != null) {
       let newRoom = {
         id: room,
         users: [user.id],
@@ -203,20 +203,20 @@ app.post('/newgame', (req, res) => {
     madeNewRoom = true
   }
 
-  if (madeNewRoom) {
-    rooms[user.room].timer = new Timer(() => {
-      console.log('del timer')
-      let roomid = user.room
-      rooms[roomid].game.terminate()
+  // if (madeNewRoom) {
+  //   rooms[user.room].timer = new Timer(() => {
+  //     console.log('del timer')
+  //     let roomid = user.room
+  //     rooms[roomid].game.terminate()
 
-      rooms[roomid].users.forEach((userId) => {
-        users[userId].room = null
-      })
+  //     rooms[roomid].users.forEach((userId) => {
+  //       users[userId].room = null
+  //     })
 
-      rooms[roomid].timer.stop()
-      delete rooms[roomid]
-    }, 1000 * 60 * 5)
-  }
+  //     rooms[roomid].timer.stop()
+  //     delete rooms[roomid]
+  //   }, 1000 * 60 * 5)
+  // }
 
   res.json({ ok: true, room: user.room })
 })
@@ -301,12 +301,12 @@ io.on('connection', (socket) => {
 
   socket.on('ping', () => {
     socket.emit('pong')
-    rooms[user.room]?.timer.reset()
+    // rooms[user.room]?.timer.reset()
   })
 
   socket.on('game', (data) => {
     rooms[user.room]?.game.socket(data, user)
-    rooms[user.room]?.timer.reset()
+    // rooms[user.room]?.timer.reset()
   })
 
   socket.on('disconnect', () => {
