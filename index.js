@@ -118,7 +118,18 @@ app.get('/userData', (req, res) => {
   let user = getUser(token)
   if (typeof user == 'undefined') return res.json({ ok: false })
 
-  res.json({ version: VERSION, games, user })
+  let sendRooms = []
+  for (let room in rooms) {
+    let roomObj = {
+      id: rooms[room].id,
+      users: rooms[room].users.length,
+      name: rooms[room].game.name,
+    }
+
+    sendRooms.push(roomObj)
+  }
+
+  res.json({ version: VERSION, games, user, sendRooms })
 })
 
 app.post('/newgame', (req, res) => {
@@ -140,7 +151,7 @@ app.post('/newgame', (req, res) => {
     user.room = null
   }
 
-  if (!gamesObjs[gameType]) {
+  if (!gamesObjs[gameType] && !room) {
     res.json({
       ok: false,
       error: 'Game type not found',
