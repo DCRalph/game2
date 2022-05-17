@@ -196,7 +196,7 @@ app.post('/newgame', (req, res) => {
     let roomid = user.room
     rooms[roomid]?.game.terminate()
 
-    rooms[roomid].users.forEach((userId) => {
+    rooms[roomid]?.users.forEach((userId) => {
       users[userId].room = null
     })
 
