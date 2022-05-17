@@ -148,6 +148,8 @@ app.post('/newgame', (req, res) => {
     return
   }
 
+  let madeNewRoom = false
+
   if (room) {
     if (rooms[room]) {
       if (rooms[room].users.length >= rooms[room].game.players.max) {
@@ -173,9 +175,8 @@ app.post('/newgame', (req, res) => {
       }
       rooms[room] = newRoom
       user.room = room
-      io.to(room).emit('newUser', {
-        user: users[user.id],
-      })
+
+      madeNewRoom = true
     }
   } else {
     let newId = nanoid(8)
@@ -187,23 +188,24 @@ app.post('/newgame', (req, res) => {
     }
     rooms[newRoom.id] = newRoom
     user.room = newRoom.id
-    io.to(newRoom.id).emit('newUser', {
-      user: users[user.id],
-    })
+
+    madeNewRoom = true
   }
 
-  rooms[user.room].timer = new Timer(() => {
-    let roomid = user.room
-    rooms[roomid]?.game.terminate()
+  if (madeNewRoom) {
+    rooms[user.room].timer = new Timer(() => {
+      console.log('del timer')
+      let roomid = user.room
+      rooms[roomid].game.terminate()
 
-    rooms[roomid]?.users.forEach((userId) => {
-      users[userId].room = null
-    })
+      rooms[roomid].users.forEach((userId) => {
+        users[userId].room = null
+      })
 
-    rooms[roomid].timer.stop()
-    delete rooms[roomid].timer
-    delete rooms[roomid]
-  }, 1000 * 10)
+      rooms[roomid].timer.stop()
+      delete rooms[roomid]
+    }, 1000 * 10)
+  }
 
   res.json({ ok: true, room: user.room })
 })
