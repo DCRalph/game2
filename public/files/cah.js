@@ -24,9 +24,10 @@ const wonModelCard = document.querySelector('#wonModelCard')
 const socket = io()
 
 socket.on('connect', () => {
-  // setInterval(() => {
-  //   socket.emit('ping')
-  // }, 1000)
+  setInterval(() => {
+    socket.emit('ping')
+    console.log('ping')
+  }, 10000)
 
   console.log('Connected', socket.id)
   emit('join')

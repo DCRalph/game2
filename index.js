@@ -204,7 +204,7 @@ app.post('/newgame', (req, res) => {
 
       rooms[roomid].timer.stop()
       delete rooms[roomid]
-    }, 1000 * 10)
+    }, 1000 * 60 * 5)
   }
 
   res.json({ ok: true, room: user.room })
@@ -287,6 +287,11 @@ io.on('connection', (socket) => {
   users[user.id].socket = socket.id
 
   socket.join(user.room)
+
+  socket.on('ping', () => {
+    socket.emit('pong')
+    rooms[user.room]?.timer.reset()
+  })
 
   socket.on('game', (data) => {
     rooms[user.room]?.game.socket(data, user)
