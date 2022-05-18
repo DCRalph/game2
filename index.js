@@ -168,11 +168,13 @@ app.post('/newgame', (req, res) => {
           ok: false,
           error: 'Room is full',
         })
+        return
       } else if (rooms[room].game.status != 'waiting') {
         res.json({
           ok: false,
           error: 'Game is already started',
         })
+        return
       } else {
         rooms[room].users.push(user.id)
         user.room = room
