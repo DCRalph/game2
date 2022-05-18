@@ -2,6 +2,7 @@ const handBar = document.querySelector('#handBar')
 const handBarCards = document.querySelector('#handBarCards')
 const actionBar = document.querySelector('#actionBar')
 
+const leave = document.querySelector('#leave')
 const startBtn = document.querySelector('#startBtn')
 const endBtn = document.querySelector('#endBtn')
 const submitBtn = document.querySelector('#submitBtn')
@@ -21,6 +22,16 @@ const wonModel = document.querySelector('#wonModel')
 const wonModelText = document.querySelector('#wonModelText')
 const wonModelCard = document.querySelector('#wonModelCard')
 
+// window.addEventListener(
+//   'beforeunload',
+//   function (e) {
+//     e.preventDefault()
+//     e.returnValue = ''
+//     return 'e'
+//   },
+//   { capture: true }
+// )
+
 const socket = io()
 
 socket.on('connect', () => {
@@ -38,6 +49,7 @@ socket.on('connect', () => {
 
 let game = null
 let user = null
+let leaving = false
 
 let modelOrder = []
 let showModel = false
@@ -578,6 +590,23 @@ modelSubmitBtn.addEventListener('click', () => {
   emit('choose', game.selModel)
   modelSubmitBtn.classList.add('hidden')
   // hideModel()
+})
+
+window.onbeforeunload = function (e) {
+  e = e || window.event
+
+  if (!leaving) {
+    if (e) {
+      e.returnValue = 'Any string'
+    }
+
+    return 'Any string'
+  }
+}
+
+leave.addEventListener('click', () => {
+  leaving = true
+  window.location.href = '/exitGame'
 })
 
 startBtn.addEventListener('click', () => {
