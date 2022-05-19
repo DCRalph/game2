@@ -6,6 +6,7 @@ const allCards = require('./cah.json')
 import log from '../logger.js'
 
 let Packs = {}
+let e = [[[[]]]]
 
 allCards.packs.forEach((pack) => {
   let white = []

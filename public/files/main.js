@@ -8,6 +8,18 @@ const gameBox = document.querySelector('#gameBox')
 const version = document.querySelector('#version')
 const runningGames = document.querySelector('#runningGames')
 
+const cookieThing = document.querySelector('#cookieThing')
+const cookieButton = document.querySelector('#cookieButton')
+
+if (localStorage.getItem('cookie') == null) {
+  cookieThing.classList.remove('hidden')
+}
+
+cookieButton.addEventListener('click', () => {
+  localStorage.setItem('cookie', true)
+  cookieThing.classList.add('hidden')
+})
+
 const getData = async () => {
   const res = await fetch('/userData')
   const data = await res.json()
@@ -95,6 +107,12 @@ const NewGame = async (id = null) => {
     }
   }
 
+  if (nameBox.value.length > 0) {
+    localStorage.setItem('name', nameBox.value)
+  } else {
+    return
+  }
+
   const res = await fetch('newGame', {
     method: 'POST',
     headers: {
@@ -116,10 +134,7 @@ const NewGame = async (id = null) => {
 
 form.addEventListener('submit', (e) => {
   e.preventDefault()
-  if (nameBox.value.length > 0) {
-    localStorage.setItem('name', nameBox.value)
-    NewGame()
-  }
+  NewGame()
 })
 
 nameBox.addEventListener('keyup', (e) => {

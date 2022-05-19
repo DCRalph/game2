@@ -120,6 +120,7 @@ app.get('/userData', (req, res) => {
 
   let sendRooms = []
   for (let room in rooms) {
+    if (rooms[room] == undefined) continue
     let roomObj = {
       id: rooms[room].id,
       users: rooms[room].users.length,
@@ -141,7 +142,11 @@ app.post('/newgame', (req, res) => {
   let gameType = req.body.game
   let room = req.body.room
 
-  users[user.id].name = req.body.name
+  user.name = req.body.name
+
+  if (user.name == '' || user.name == null) {
+    return res.json({ ok: false, err: 'Name is empty' })
+  }
 
   if (user.room) {
     if (rooms[user.room]) {
@@ -179,7 +184,7 @@ app.post('/newgame', (req, res) => {
         rooms[room].users.push(user.id)
         user.room = room
       }
-    } else if(gameType != null) {
+    } else if (gameType != null) {
       let newRoom = {
         id: room,
         users: [user.id],
@@ -205,20 +210,24 @@ app.post('/newgame', (req, res) => {
     madeNewRoom = true
   }
 
-  // if (madeNewRoom) {
-  //   rooms[user.room].timer = new Timer(() => {
-  //     console.log('del timer')
-  //     let roomid = user.room
-  //     rooms[roomid].game.terminate()
+  if (madeNewRoom) {
+    rooms[user.room].timer = new Timer(() => {
+      console.log('del timer')
+      console.log(rooms)
+      console.log(user)
+      let roomid = user.room
+      rooms[roomid].game.terminate()
 
-  //     rooms[roomid].users.forEach((userId) => {
-  //       users[userId].room = null
-  //     })
+      rooms[roomid].users.forEach((userId) => {
+        users[userId].room = null
+      })
 
-  //     rooms[roomid].timer.stop()
-  //     delete rooms[roomid]
-  //   }, 1000 * 60 * 5)
-  // }
+      rooms[roomid].timer.stop()
+      // rooms[roomid].timer = undefined
+      rooms[roomid] = undefined
+      // delete rooms[roomid]
+    }, 1000 * 10)
+  }
 
   res.json({ ok: true, room: user.room })
 })
@@ -227,11 +236,15 @@ app.get('/exitGame', (req, res) => {
   let token = req.cookies.token
   let user = getUser(token)
 
-  if (!user?.room) return
+  if (user == undefined) return res.redirect('/')
+  if (user.room == null) return res.redirect('/')
+  if (rooms[user.room] == undefined) return res.redirect('/')
   let game = rooms[user.room]
-  if (!game) return
 
-  if (game.game.leave(user)) delete rooms[user.room]
+  if (game.game.leave(user)) {
+    game.timer.stop()
+    delete rooms[user.room]
+  }
   game.users.splice(game.users.indexOf(user.id), 1)
 
   user.room = null
@@ -260,14 +273,18 @@ app.get('/files/:file(*)', (req, res) => {
     .json({ err: '404 File Not Found', file: req.params.file })
 })
 
-app.get('/game/:id', (req, res) => {
-  const roomId = req.params.id
+const handleGame = (req, res) => {
+  const roomIdPram = req.params?.id
 
   let token = req.cookies.token
   let user = getUser(token)
   if (typeof user == 'undefined') return res.redirect('/')
 
-  users[user.id].room = roomId
+  const roomId = user.room
+
+  if (roomId != roomIdPram) {
+    return res.redirect('/game/' + roomId)
+  }
 
   if (rooms[roomId]) {
     let path = __dirname + '/public/' + rooms[roomId].game.file
@@ -279,10 +296,13 @@ app.get('/game/:id', (req, res) => {
       .status(404)
       .json({ err: '404 File Not Found', file: req.params.file })
   } else {
-    res.redirect('/')
     users[user.id].room = null
+    return res.redirect('/')
   }
-})
+}
+
+app.get('/game', handleGame)
+app.get('/game/:id', handleGame)
 
 io.on('connection', (socket) => {
   let cookies = {}
@@ -303,12 +323,12 @@ io.on('connection', (socket) => {
 
   socket.on('ping', () => {
     socket.emit('pong')
-    // rooms[user.room]?.timer.reset()
+    rooms[user.room]?.timer.reset()
   })
 
   socket.on('game', (data) => {
-    rooms[user.room]?.game.socket(data, user)
-    // rooms[user.room]?.timer.reset()
+    if (rooms[user.room]) rooms[user.room]?.game.socket(data, user)
+    rooms[user.room]?.timer.reset()
   })
 
   socket.on('disconnect', () => {
