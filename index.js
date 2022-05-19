@@ -21,8 +21,6 @@ const VERSION = require('./package.json').version
 
 console.log('Cards Against Humanity v' + VERSION)
 
-// get version from package.json
-
 const app = express()
 const httpServer = createServer(app)
 const io = new Server(httpServer)

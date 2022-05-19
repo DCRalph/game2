@@ -511,8 +511,8 @@ Ensure the default browser behavior of the `hidden` attribute.
   bottom: 0px;
 }
 
-.-top-6 {
-  top: -1.5rem;
+.top-2 {
+  top: 0.5rem;
 }
 
 .left-2 {
@@ -521,26 +521,6 @@ Ensure the default browser behavior of the `hidden` attribute.
 
 .bottom-10 {
   bottom: 2.5rem;
-}
-
-.-top-3 {
-  top: -0.75rem;
-}
-
-.-top-0 {
-  top: -0px;
-}
-
-.-top-2 {
-  top: -0.5rem;
-}
-
-.top-2 {
-  top: 0.5rem;
-}
-
-.top-1 {
-  top: 0.25rem;
 }
 
 .z-50 {
@@ -878,14 +858,6 @@ Ensure the default browser behavior of the `hidden` attribute.
   padding-right: 0.75rem;
 }
 
-.pl-24 {
-  padding-left: 6rem;
-}
-
-.pl-12 {
-  padding-left: 3rem;
-}
-
 .pl-14 {
   padding-left: 3.5rem;
 }
@@ -919,6 +891,11 @@ Ensure the default browser behavior of the `hidden` attribute.
   line-height: 2.25rem;
 }
 
+.text-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
 .text-6xl {
   font-size: 3.75rem;
   line-height: 1;
@@ -927,11 +904,6 @@ Ensure the default browser behavior of the `hidden` attribute.
 .text-xs {
   font-size: 0.75rem;
   line-height: 1rem;
-}
-
-.text-sm {
-  font-size: 0.875rem;
-  line-height: 1.25rem;
 }
 
 .font-semibold {
