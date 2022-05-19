@@ -13,8 +13,15 @@ import { nanoid } from 'nanoid'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
+import { createRequire } from 'module'
+const require = createRequire(import.meta.url)
+
 const PORT = 3001
-const VERSION = '1.2.7'
+const VERSION = require('./package.json').version
+
+console.log('Cards Against Humanity v' + VERSION)
+
+// get version from package.json
 
 const app = express()
 const httpServer = createServer(app)
