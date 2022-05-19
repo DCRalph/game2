@@ -11,16 +11,18 @@
   <body class="bg-gray-800 flex flex-col items-center min-h-screen">
     <div class="fixed bottom-0 hidden" id="cookieThing">
       <div
-        class="flex relative bg-white rounded-t-lg items-center gap-4 pl-24 p-2"
+        class="flex relative bg-white rounded-t-lg items-center gap-4 pl-14 md:pl-24 p-2"
       >
-        <div class="h-20 -top-6 left-2 absolute">
+        <div class="h-10 md:h-20 top-2 md:-top-6 left-2 absolute">
           <img
             class="object-cover w-full h-full bottom-10"
             src="/files/cookie.png"
             alt=""
           />
         </div>
-        <span class="">We use cookies to improve your experience.</span>
+        <span class="text-sm md:text-lg text-center"
+          >We use cookies to improve your experience.</span
+        >
         <button
           class="min-w-fit px-3 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600"
           id="cookieButton"

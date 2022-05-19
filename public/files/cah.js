@@ -227,7 +227,7 @@ const renderModel = (shuffelModel = false) => {
 
   const makeCard = (id, answers) => {
     return `<div
-    class="relative w-48 h-72 overflow-y-scroll bg-white ring-4 ring-black rounded-xl"
+    class="relative w-48 h-72 overflow-y-scroll bg-white ring-4 ring-black rounded-xl select-none"
     id="model-${id}"
   >
     ${makeInner(answers)}
@@ -278,7 +278,7 @@ const renderWonModel = (name, cards) => {
       let border = i != 0 ? 'border-t-2 border-gray-300' : ''
       inner += `
     <div
-      class="text-xl font-semibold px-4 py-2 pointer-events-none ${border}"
+      class="text-xl font-semibold px-4 py-2 ${border}"
     >
       ${text}
     </div>`
@@ -291,12 +291,12 @@ const renderWonModel = (name, cards) => {
     class="w-48 h-72 shrink-0 rounded-xl bg-black ring-4 ring-white relative select-none"
   >
     <div
-      class="text-xl text-white font-semibold px-4 py-2 pointer-events-none"
+      class="text-xl text-white font-semibold px-4 py-2"
     >${cards[0].text}</div>
   </div>
 
     <div
-    class="relative w-48 h-72 overflow-y-scroll bg-white ring-4 ring-black rounded-xl"
+    class="relative w-48 h-72 overflow-y-scroll bg-white ring-4 ring-black rounded-xl select-none"
   >
     ${makeInner(cards[1])}
   </div>`

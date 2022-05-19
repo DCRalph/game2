@@ -511,44 +511,36 @@ Ensure the default browser behavior of the `hidden` attribute.
   bottom: 0px;
 }
 
-.-top-10 {
-  top: -2.5rem;
+.-top-6 {
+  top: -1.5rem;
 }
 
-.top-10 {
-  top: 2.5rem;
+.left-2 {
+  left: 0.5rem;
 }
 
 .bottom-10 {
   bottom: 2.5rem;
 }
 
-.-top-4 {
-  top: -1rem;
+.-top-3 {
+  top: -0.75rem;
 }
 
-.-top-8 {
-  top: -2rem;
+.-top-0 {
+  top: -0px;
 }
 
-.-top-6 {
-  top: -1.5rem;
+.-top-2 {
+  top: -0.5rem;
 }
 
-.-left-20 {
-  left: -5rem;
+.top-2 {
+  top: 0.5rem;
 }
 
-.-left-10 {
-  left: -2.5rem;
-}
-
-.left-10 {
-  left: 2.5rem;
-}
-
-.left-2 {
-  left: 0.5rem;
+.top-1 {
+  top: 0.25rem;
 }
 
 .z-50 {
@@ -593,18 +585,6 @@ Ensure the default browser behavior of the `hidden` attribute.
   margin-top: 1rem;
 }
 
-.ml-32 {
-  margin-left: 8rem;
-}
-
-.ml-4 {
-  margin-left: 1rem;
-}
-
-.ml-2 {
-  margin-left: 0.5rem;
-}
-
 .flex {
   display: flex;
 }
@@ -615,14 +595,6 @@ Ensure the default browser behavior of the `hidden` attribute.
 
 .hidden {
   display: none;
-}
-
-.aspect-auto {
-  aspect-ratio: auto;
-}
-
-.aspect-square {
-  aspect-ratio: 1 / 1;
 }
 
 .h-full {
@@ -649,20 +621,8 @@ Ensure the default browser behavior of the `hidden` attribute.
   height: 5rem;
 }
 
-.h-32 {
-  height: 8rem;
-}
-
-.h-24 {
-  height: 6rem;
-}
-
-.h-2 {
-  height: 0.5rem;
-}
-
-.h-16 {
-  height: 4rem;
+.h-10 {
+  height: 2.5rem;
 }
 
 .min-h-screen {
@@ -699,10 +659,6 @@ Ensure the default browser behavior of the `hidden` attribute.
 
 .w-16 {
   width: 4rem;
-}
-
-.w-auto {
-  width: auto;
 }
 
 .min-w-fit {
@@ -922,20 +878,16 @@ Ensure the default browser behavior of the `hidden` attribute.
   padding-right: 0.75rem;
 }
 
-.pl-32 {
-  padding-left: 8rem;
-}
-
 .pl-24 {
   padding-left: 6rem;
 }
 
-.pl-20 {
-  padding-left: 5rem;
+.pl-12 {
+  padding-left: 3rem;
 }
 
-.pl-2 {
-  padding-left: 0.5rem;
+.pl-14 {
+  padding-left: 3.5rem;
 }
 
 .text-center {
@@ -975,6 +927,11 @@ Ensure the default browser behavior of the `hidden` attribute.
 .text-xs {
   font-size: 0.75rem;
   line-height: 1rem;
+}
+
+.text-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
 }
 
 .font-semibold {
@@ -1143,8 +1100,16 @@ body {
 }
 
 @media (min-width: 768px) {
+  .md\:-top-6 {
+    top: -1.5rem;
+  }
+
   .md\:h-12 {
     height: 3rem;
+  }
+
+  .md\:h-20 {
+    height: 5rem;
   }
 
   .md\:flex-row {
@@ -1175,6 +1140,10 @@ body {
     border-left-width: 2px;
   }
 
+  .md\:pl-24 {
+    padding-left: 6rem;
+  }
+
   .md\:text-4xl {
     font-size: 2.25rem;
     line-height: 2.5rem;
@@ -1183,5 +1152,10 @@ body {
   .md\:text-2xl {
     font-size: 1.5rem;
     line-height: 2rem;
+  }
+
+  .md\:text-lg {
+    font-size: 1.125rem;
+    line-height: 1.75rem;
   }
 }
