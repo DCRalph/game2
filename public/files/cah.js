@@ -95,9 +95,8 @@ socket.on('game', (data) => {
     case 'pong':
       {
         ping = 0
-        console.log('Pong', ping)
 
-        if (ping > 5) {
+        if (ping > 3) {
           window.location.href = '/exitGame'
         }
       }
