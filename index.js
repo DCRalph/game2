@@ -289,7 +289,7 @@ const handleGame = (req, res) => {
 
   const roomId = user.room
 
-  if (roomId != roomIdPram) {
+  if (roomId != roomIdPram && roomId != null) {
     return res.redirect('/game/' + roomId)
   }
 
