@@ -38,7 +38,7 @@ socket.on('connect', () => {
   setInterval(() => {
     socket.emit('ping')
     console.log('ping')
-  }, 10000)
+  }, 1000 * 10)
 
   console.log('Connected', socket.id)
   emit('join')
