@@ -328,12 +328,12 @@ io.on('connection', (socket) => {
 
   socket.join(user.room)
 
-  socket.on('ping', () => {
-    socket.emit('pong')
-    if (rooms[user.room] != undefined) {
-      rooms[user.room].timer.reset()
-    }
-  })
+  // socket.on('ping', () => {
+  //   socket.emit('pong')
+  //   if (rooms[user.room] != undefined) {
+  //     rooms[user.room].timer.reset()
+  //   }
+  // })
 
   socket.on('game', (data) => {
     if (rooms[user.room] != undefined) {

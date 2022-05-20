@@ -6,7 +6,6 @@ const allCards = require('./cah.json')
 import log from '../logger.js'
 
 let Packs = {}
-let e = [[[[]]]]
 
 allCards.packs.forEach((pack) => {
   let white = []
@@ -169,6 +168,11 @@ class Game {
         this.emit(user.socket, { cmd: 'test' })
         break
 
+      case 'ping':
+        {
+          this.emit(user.socket, { cmd: 'pong' })
+        }
+        break
       case 'info':
         this.emitInfo()
         break

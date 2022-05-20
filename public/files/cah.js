@@ -32,24 +32,12 @@ const wonModelCard = document.querySelector('#wonModelCard')
 //   { capture: true }
 // )
 
-const socket = io()
-
-socket.on('connect', () => {
-  setInterval(() => {
-    socket.emit('ping')
-    console.log('ping')
-  }, 1000 * 10)
-
-  console.log('Connected', socket.id)
-  emit('join')
-  emit('info')
-})
-
 ////////////////////////////////////////////
 
 let game = null
 let user = null
 let leaving = false
+let ping = 0
 
 let modelOrder = []
 let showModel = false
@@ -69,6 +57,8 @@ const shuffle = (array) => {
   return array
 }
 
+const socket = io()
+
 const emit = (cmd, data = {}) => {
   let obj = {
     cmd,
@@ -83,12 +73,30 @@ const emit = (cmd, data = {}) => {
   console.log('>>', obj)
 }
 
+socket.on('connect', () => {
+  setInterval(() => {
+    emit('ping')
+    ping += 1
+  }, 1000 * 10)
+
+  console.log('Connected', socket.id)
+  emit('join')
+  emit('info')
+})
+
 socket.on('game', (data) => {
   console.log('<<', data)
 
   switch (data.cmd) {
     case 'test':
       console.log('Tested')
+      break
+
+    case 'pong':
+      {
+        ping -= 1
+        console.log('Pong', ping)
+      }
       break
 
     case 'quit':
