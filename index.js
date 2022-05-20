@@ -349,10 +349,10 @@ io.on('connection', (socket) => {
 
       game.users.splice(game.users.indexOf(user.id), 1)
 
-      user.room = undefined
+      user.room = null
     }
 
-    users[user.id].socket = undefined
+    users[user.id].socket = null
     socket.leave(user.room)
   })
 })

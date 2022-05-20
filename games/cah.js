@@ -36,7 +36,6 @@ const userScema = {
   submited: false,
   score: 0,
   vip: false,
-  won: [],
 }
 
 const meta = {
@@ -94,6 +93,8 @@ class Game {
     this.selModel = null
 
     this.blackCard = null
+
+    this.gameLog = []
   }
 
   shuffle(array) {
@@ -298,10 +299,14 @@ class Game {
             winnerCards.push(this.users[this.userArray[data.data]].hand[id])
           })
 
-          this.users[this.userArray[data.data]].won.push([
-            this.blackCard,
+          this.gameLog.push({
+            black: this.blackCard,
+            winner: [
+              this.userArray[data.data],
+              this.users[this.userArray[data.data]].name,
+            ],
             winnerCards,
-          ])
+          })
 
           this.userArray.forEach((id) => {
             this.users[id].submited = false
