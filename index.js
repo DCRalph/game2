@@ -87,11 +87,11 @@ class Timer {
   }
 
   reset = (nt = this.t) => {
-    console.log('reset', this.#timer)
+    // console.log('reset', this.#timer)
     this.t = nt
     this.stop()
     this.start()
-    console.log(this.#timer)
+    // console.log(this.#timer)
   }
 }
 
@@ -217,7 +217,7 @@ app.post('/newgame', (req, res) => {
     madeNewRoom = true
   }
 
-  if (madeNewRoom) {
+  if (madeNewRoom && 1 == 2) {
     rooms[user.room].timer = new Timer(() => {
       console.log('del timer')
       console.log(rooms)
