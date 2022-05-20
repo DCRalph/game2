@@ -217,7 +217,7 @@ app.post('/newgame', (req, res) => {
     madeNewRoom = true
   }
 
-  if (madeNewRoom && 1 == 2) {
+  if (madeNewRoom) {
     rooms[user.room].timer = new Timer(() => {
       console.log('del timer')
       console.log(rooms)
