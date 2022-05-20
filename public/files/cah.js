@@ -77,7 +77,7 @@ socket.on('connect', () => {
   setInterval(() => {
     emit('ping')
     ping += 1
-  }, 1000 * 10)
+  }, 1000 * 5)
 
   console.log('Connected', socket.id)
   emit('join')
@@ -96,7 +96,7 @@ socket.on('game', (data) => {
       {
         ping = 0
 
-        if (ping > 3) {
+        if (ping > 2) {
           window.location.href = '/exitGame'
         }
       }
