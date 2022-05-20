@@ -291,7 +291,7 @@ class Game {
           if (this.userArray[this.turn] != user.id) return
           if (this.blackCard == null) return
           if (!this.everyoneSubmited) return
-          if (data.data == null) return
+          if (data.data == undefined) return
 
           this.turn++
           if (this.turn >= this.userArray.length) this.turn = 0
