@@ -34,6 +34,7 @@ let games = []
 let gamesObjs = {}
 
 let files = fs.readdirSync('./games')
+// console.log(files)
 for (let file of files) {
   if (file.endsWith('.js')) {
     let game = await import(`./games/${file}`)
@@ -148,6 +149,22 @@ app.post('/newgame', (req, res) => {
 
   let gameType = req.body.game
   let room = req.body.room
+  let argsRaw = req.body.args
+  let args = {}
+
+  if (argsRaw == null || argsRaw == '') args = {}
+  else {
+    // parse a string of args into an object
+    // string should be in the form of key="value, value",key="value"
+
+    let argsArr = argsRaw.split(';')
+    for (let arg of argsArr) {
+      let key = arg.split('=')[0]
+      let value = arg.split('=')[1]
+      args[key] = value
+    }
+    console.log(args)
+  }
 
   user.name = req.body.name
 
@@ -195,7 +212,7 @@ app.post('/newgame', (req, res) => {
       let newRoom = {
         id: room,
         users: [user.id],
-        game: new gamesObjs[gameType].Game(room, io),
+        game: new gamesObjs[gameType].Game(room, io, args),
         timer: null,
       }
       rooms[room] = newRoom
@@ -208,7 +225,7 @@ app.post('/newgame', (req, res) => {
     let newRoom = {
       id: newId,
       users: [user.id],
-      game: new gamesObjs[gameType].Game(newId, io),
+      game: new gamesObjs[gameType].Game(newId, io, args),
       timer: null,
     }
     rooms[newRoom.id] = newRoom

@@ -166,7 +166,7 @@ socket.on('game', (data) => {
 
         let wonUser = game.users[data.data.user]
 
-        renderWonModel(wonUser.name, wonUser.won[wonUser.won.length - 1])
+        renderWonModel(game.gameLog[game.gameLog.length - 1])
 
         setTimeout(() => {
           hideWonModel()
@@ -282,7 +282,7 @@ const hideWonModel = () => {
   wonModel.classList.add('hidden')
 }
 
-const renderWonModel = (name, cards) => {
+const renderWonModel = (data) => {
   const makeInner = (answers) => {
     let inner = ''
     answers.forEach((text, i) => {
@@ -297,35 +297,35 @@ const renderWonModel = (name, cards) => {
     return inner
   }
 
-  const makeCard = (cards) => {
+  const makeCard = () => {
     return `<div
     class="w-48 h-72 shrink-0 rounded-xl bg-black ring-4 ring-white relative select-none"
   >
     <div
       class="text-xl text-white font-semibold px-4 py-2"
-    >${cards[0].text}</div>
+    >${data.black.text}</div>
   </div>
 
     <div
     class="relative w-48 h-72 overflow-y-scroll bg-white ring-4 ring-black rounded-xl select-none"
   >
-    ${makeInner(cards[1])}
+    ${makeInner(data.white)}
   </div>`
   }
 
   let html = ''
 
-  html += makeCard(cards)
+  html += makeCard()
 
   wonModelCard.innerHTML = html
-  wonModelText.innerHTML = name
+  wonModelText.innerHTML = data.winner[1]
 
   wonModel.classList.remove('hidden')
 }
 
 const renderInfoBoard = () => {
   let extraInfo = [
-    ['Room ID', game.roomid],
+    [game.pack, game.roomid],
     ['Round', game.round],
     ['White Cards', game.whiteLen],
     ['Black Cards', game.blackLen],

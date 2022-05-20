@@ -2,6 +2,7 @@ const form = document.querySelector('#form')
 const nameBox = document.querySelector('#nameBox')
 const roomBox = document.querySelector('#roomBox')
 const gameBox = document.querySelector('#gameBox')
+const argsBox = document.querySelector('#argsBox')
 // const joinGame = document.querySelector('#joinGame')
 // const hostGame = document.querySelector('#hostGame')
 
@@ -98,6 +99,7 @@ const NewGame = async (id = null) => {
       name: nameBox.value,
       room: roomBox.value,
       game: gameBox.value,
+      args: argsBox.value,
     }
   } else {
     body = {

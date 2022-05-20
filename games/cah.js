@@ -1,30 +1,7 @@
 import fs from 'fs'
-import { createRequire } from 'module'
-const require = createRequire(import.meta.url)
-const allCards = require('./cah.json')
-
+import { makePack } from './utils/loadCards.js'
 import log from '../logger.js'
-
-let Packs = {}
-
-allCards.packs.forEach((pack) => {
-  let white = []
-  let black = []
-
-  pack.white.forEach((card) => {
-    white.push(allCards.white[card])
-  })
-  pack.black.forEach((card) => {
-    black.push(allCards.black[card])
-  })
-
-  Packs[pack.name] = {
-    white: white,
-    black: black,
-  }
-
-  // log.info(`Loaded ${pack.name}`)
-})
+import { throws } from 'assert'
 
 const userScema = {
   id: '',
@@ -47,7 +24,7 @@ class Game {
   #io
   #white
   #black
-  constructor(roomid, io) {
+  constructor(roomid, io, args) {
     this.roomid = roomid
     this.#io = io
 
@@ -59,25 +36,12 @@ class Game {
     }
     this.status = 'waiting'
 
-    let packsUsed = ['CAH Base Set', 'Hilarious!']
+    this.pack = args.pack || 'default'
 
-    let allWhite = []
-    let allBlack = []
+    let pack = makePack(this.pack)
 
-    packsUsed.forEach((pack) => {
-      allWhite = allWhite.concat(Packs[pack].white)
-      allBlack = allBlack.concat(Packs[pack].black)
-    })
-
-    // console.log(allWhite.length, allBlack.length)
-
-    allWhite = allWhite.filter((item, pos) => allWhite.indexOf(item) == pos)
-    allBlack = allBlack.filter((item, pos) => allBlack.indexOf(item) == pos)
-
-    // console.log(allWhite.length, allBlack.length)
-
-    this.#white = this.shuffle(allWhite)
-    this.#black = this.shuffle(allBlack)
+    this.#white = this.shuffle(pack.white)
+    this.#black = this.shuffle(pack.black)
 
     this.vip = null
 
@@ -309,7 +273,7 @@ class Game {
               this.userArray[data.data],
               this.users[this.userArray[data.data]].name,
             ],
-            winnerCards,
+            white: winnerCards,
           })
 
           this.userArray.forEach((id) => {
