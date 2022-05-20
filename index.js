@@ -87,9 +87,11 @@ class Timer {
   }
 
   reset = (nt = this.t) => {
+    console.log('reset', this.#timer)
     this.t = nt
     this.stop()
     this.start()
+    console.log(this.#timer)
   }
 }
 
@@ -301,7 +303,7 @@ const handleGame = (req, res) => {
       .status(404)
       .json({ err: '404 File Not Found', file: req.params.file })
   } else {
-    users[user.id].room = null
+    users[user.id].room = undefined
     return res.redirect('/')
   }
 }
