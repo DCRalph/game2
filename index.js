@@ -151,7 +151,7 @@ app.post('/newgame', (req, res) => {
 
   user.name = req.body.name
 
-  if (user.name == '' || user.name == null) {
+  if (user.name == '' || user.name == undefined) {
     return res.json({ ok: false, err: 'Name is empty' })
   }
 
@@ -244,7 +244,7 @@ app.get('/exitGame', (req, res) => {
   let user = getUser(token)
 
   if (user == undefined) return res.redirect('/')
-  if (user.room == null) return res.redirect('/')
+  if (user.room == undefined) return res.redirect('/')
   if (rooms[user.room] == undefined) return res.redirect('/')
   let game = rooms[user.room]
 
@@ -303,7 +303,7 @@ const handleGame = (req, res) => {
       .status(404)
       .json({ err: '404 File Not Found', file: req.params.file })
   } else {
-    users[user.id].room = undefined
+    users[user.id].room = null
     return res.redirect('/')
   }
 }
@@ -330,12 +330,16 @@ io.on('connection', (socket) => {
 
   socket.on('ping', () => {
     socket.emit('pong')
-    rooms[user.room]?.timer.reset()
+    if (rooms[user.room] != undefined) {
+      rooms[user.room].timer.reset()
+    }
   })
 
   socket.on('game', (data) => {
-    if (rooms[user.room]) rooms[user.room]?.game.socket(data, user)
-    rooms[user.room]?.timer.reset()
+    if (rooms[user.room] != undefined) {
+      rooms[user.room].game.socket(data, user)
+      rooms[user.room].timer.reset()
+    }
   })
 
   socket.on('disconnect', () => {
@@ -345,10 +349,10 @@ io.on('connection', (socket) => {
 
       game.users.splice(game.users.indexOf(user.id), 1)
 
-      user.room = null
+      user.room = undefined
     }
 
-    users[user.id].socket = null
+    users[user.id].socket = undefined
     socket.leave(user.room)
   })
 })
