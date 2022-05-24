@@ -1,7 +1,6 @@
 import fs from 'fs'
 import { makePack } from './utils/loadCards.js'
 import log from '../logger.js'
-import { throws } from 'assert'
 
 const userScema = {
   id: '',
@@ -15,7 +14,7 @@ const userScema = {
 }
 
 const meta = {
-  name: 'cah',
+  name: 'Cards Against Humanity',
   description: 'card against humanity',
   version: '1.0.0',
 }
