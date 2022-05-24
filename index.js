@@ -36,7 +36,7 @@ let gamesObjs = {}
 let files = fs.readdirSync('./games')
 // console.log(files)
 for (let file of files) {
-  if (file.endsWith('.js')) {
+  if (file.endsWith('.js') && !file.startsWith('_')) {
     let game = await import(`./games/${file}`)
     gamesObjs[game.meta.name] = game
     games.push(game.meta.name)
