@@ -553,6 +553,11 @@ Ensure the default browser behavior of the `hidden` attribute.
   margin-right: 24rem;
 }
 
+.mx-4 {
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
+
 .mt-8 {
   margin-top: 2rem;
 }
