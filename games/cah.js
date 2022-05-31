@@ -1,6 +1,4 @@
-import fs from 'fs'
 import { makePack } from './utils/loadCards.js'
-import log from '../logger.js'
 
 const userScema = {
   id: '',
@@ -31,7 +29,7 @@ class Game {
     this.file = 'cah.html'
     this.players = {
       min: 2,
-      max: 10,
+      max: args.maxP || 10,
     }
     this.status = 'waiting'
 
@@ -141,22 +139,24 @@ class Game {
         break
 
       case 'join':
-        if (!this.users[user.id]) {
-          this.users[user.id] = structuredClone(userScema)
-          this.users[user.id].id = user.id
-          this.users[user.id].name = user.name
-          this.users[user.id].hand = this.#white.splice(0, 5)
+        {
+          if (!this.users[user.id]) {
+            this.users[user.id] = structuredClone(userScema)
+            this.users[user.id].id = user.id
+            this.users[user.id].name = user.name
+            this.users[user.id].hand = this.#white.splice(0, 5)
 
-          this.userArray.push(user.id)
-          if (this.vip == null) {
-            this.vip = user.id
+            this.userArray.push(user.id)
+            if (this.vip == null) {
+              this.vip = user.id
+            }
+            this.users[user.id].vip = this.vip == user.id
           }
-          this.users[user.id].vip = this.vip == user.id
+          this.emit(user.socket, {
+            cmd: 'join',
+            data: this.users[user.id],
+          })
         }
-        this.emit(user.socket, {
-          cmd: 'join',
-          data: this.users[user.id],
-        })
         break
       case 'sel':
         if (!this.users[user.id]) return
@@ -184,8 +184,10 @@ class Game {
         this.emitInfo()
         break
       case 'ready':
-        if (!this.users[user.id]) return
-        this.users[user.id].ready = true
+        {
+          if (!this.users[user.id]) return
+          this.users[user.id].ready = true
+        }
         break
       case 'start':
         {
