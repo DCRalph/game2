@@ -29,7 +29,7 @@ class Game {
     this.file = 'cah.html'
     this.players = {
       min: 2,
-      max: args.maxP || 10,
+      max: parseInt(args.maxP) || 10,
     }
     this.status = 'waiting'
 
