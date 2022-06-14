@@ -251,8 +251,8 @@ app.post('/newgame', (req, res) => {
 
       rooms[roomid].timer.stop()
       rooms[roomid] = undefined
-      // }, 1000 * 60 * 5)
-    }, 1000 * 10)
+    }, 1000 * 60 * 5)
+    // }, 1000 * 10)
   }
 
   res.json({ ok: true, room: user.room })
