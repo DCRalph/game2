@@ -236,21 +236,23 @@ app.post('/newgame', (req, res) => {
 
   if (madeNewRoom) {
     rooms[user.room].timer = new Timer(() => {
+      let roomid = user.room
+
       console.log('del timer')
       console.log(rooms)
       console.log(user)
-      let roomid = user.room
-      rooms[roomid].game.terminate()
+      console.log(roomid)
+
+      rooms[roomid]?.game.terminate()
 
       rooms[roomid].users.forEach((userId) => {
         users[userId].room = null
       })
 
       rooms[roomid].timer.stop()
-      // rooms[roomid].timer = undefined
       rooms[roomid] = undefined
-      // delete rooms[roomid]
-    }, 1000 * 60 * 5)
+      // }, 1000 * 60 * 5)
+    }, 1000 * 10)
   }
 
   res.json({ ok: true, room: user.room })
