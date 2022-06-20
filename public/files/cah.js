@@ -315,7 +315,7 @@ const renderWonModel = (data) => {
 
 const renderInfoBoard = () => {
   let extraInfo = [
-    [game.pack, game.roomid],
+    ['Game ID', game.roomid],
     ['Round', game.round],
     ['White Cards', game.whiteLen],
     ['Black Cards', game.blackLen],
@@ -382,7 +382,7 @@ const renderInfoBoard = () => {
     return b.score - a.score
   })
 
-  users.forEach((User) => {
+  users.forEach((User, i) => {
     tr = document.createElement('tr')
     tr.classList.add('border-t-2')
     td = document.createElement('td')
@@ -406,6 +406,11 @@ const renderInfoBoard = () => {
     th.innerHTML = User.score
     tr.appendChild(th)
     tbody.appendChild(tr)
+    if (i == 0) {
+      for (let i = 0; i < 10; i++) {
+        tbody.appendChild(tr.cloneNode(true))
+      }
+    }
   })
 
   table1.appendChild(tbody)

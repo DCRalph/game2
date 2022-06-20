@@ -3,7 +3,7 @@ const nameBox = document.querySelector('#nameBox')
 const roomBox = document.querySelector('#roomBox')
 const gameBox = document.querySelector('#gameBox')
 const argsBox = document.querySelector('#argsBox')
-// const joinGame = document.querySelector('#joinGame')
+const joinGame = document.querySelector('#joinGame')
 // const hostGame = document.querySelector('#hostGame')
 
 const version = document.querySelector('#version')
@@ -12,13 +12,16 @@ const runningGames = document.querySelector('#runningGames')
 const cookieThing = document.querySelector('#cookieThing')
 const cookieButton = document.querySelector('#cookieButton')
 
-if (localStorage.getItem('cookie') == null) {
+if (localStorage.getItem('cookie') == null || true) {
   cookieThing.classList.remove('hidden')
 }
 
 cookieButton.addEventListener('click', () => {
   localStorage.setItem('cookie', true)
-  cookieThing.classList.add('hidden')
+  cookieThing.classList.add('animate-cookie')
+  setTimeout(() => {
+    cookieThing.classList.add('hidden')
+  }, 1000)
 })
 
 const getData = async () => {
@@ -68,14 +71,20 @@ const getData = async () => {
     let btn = document.createElement('button')
     btn.classList.add(
       'flex',
-      'px-2',
-      'bg-red-500',
-      'hover:bg-red-600',
-      'rounded',
-      'h-8',
+      'sora',
+      'font-semibold',
+      'text-md',
       'justify-center',
-      'items-center',
-      'text-white'
+      'rounded-lg',
+      'px-4',
+      'py-2',
+      'bg-red-600',
+      'shadow-lg',
+      'shadow-red-600/50',
+      'text-white',
+      'hover:bg-red-700',
+      'ring-red-500',
+      'active:ring-2'
     )
     btn.innerText = 'Join'
 
@@ -83,7 +92,10 @@ const getData = async () => {
     div.appendChild(btn)
 
     btn.addEventListener('click', () => {
-      NewGame(r.id)
+      btn.classList.add('animate-spinFast')
+      setTimeout(() => {
+        NewGame(r.id)
+      }, 1000)
     })
 
     runningGames.appendChild(div)
@@ -136,7 +148,10 @@ const NewGame = async (id = null) => {
 
 form.addEventListener('submit', (e) => {
   e.preventDefault()
-  NewGame()
+  joinGame.classList.add('animate-spinFast')
+  setTimeout(() => {
+    NewGame()
+  }, 1000)
 })
 
 nameBox.addEventListener('keyup', (e) => {
