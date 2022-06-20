@@ -437,8 +437,7 @@ io.on('connection', (socket) => {
     logger.info(
       'User ' +
         logger.c.magenta(user.name + ' (' + logger.c.yellow(user.id) + ')') +
-        ' disconnected from room socket ' +
-        logger.c.yellow(user.room)
+        ' disconnected from room socket'
     )
     logger.blank()
 
