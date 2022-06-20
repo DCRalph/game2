@@ -316,14 +316,14 @@ class Game {
         {
           if (!this.users[user.id]) return
 
-          let user2 = user.id || data.data?.user
+          let user2 = data.data?.user || user.id
 
           if (data.data.score) {
-            this.users[user.id].score = data.data.score
+            this.users[user2].score = data.data.score
           }
 
           if (data.data.hand) {
-            this.users[user.id].hand[data.data.hand[0]] = data.data.hand[1]
+            this.users[user2].hand[data.data.hand[0]] = data.data.hand[1]
           }
 
           this.emitInfo()
