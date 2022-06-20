@@ -406,7 +406,7 @@ const renderInfoBoard = () => {
     th.innerHTML = User.score
     tr.appendChild(th)
     tbody.appendChild(tr)
-    if (i == 0) {
+    if (i == 0 && 0) {
       for (let i = 0; i < 10; i++) {
         tbody.appendChild(tr.cloneNode(true))
       }
