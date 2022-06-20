@@ -357,7 +357,7 @@ io.on('connection', (socket) => {
   socket.on('game', (data) => {
     if (rooms[user.room] != undefined) {
       rooms[user.room].game.socket(data, user)
-      rooms[user.room].timer.reset()
+      // rooms[user.room].timer.reset()
     }
   })
 
