@@ -16,6 +16,7 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 import { createRequire } from 'module'
+import { log } from 'util'
 const require = createRequire(import.meta.url)
 
 const PORT = 3001
@@ -32,6 +33,8 @@ const io = new Server(httpServer)
 app.use(express.json())
 app.use(cookieParser())
 
+const TIMEOUT = 1000 * 60 * 5
+
 let users = {}
 let rooms = {}
 let games = []
@@ -46,8 +49,46 @@ for (let file of files) {
     games.push(game.meta.name)
   }
 }
+let currentTimer = 0
+class Timer {
+  #timer
+  constructor(fnIn, t, state = true) {
+    this.id = currentTimer++
+    this.fn = () => {
+      // logger.debug(`Timer ${this.id} running`)
+      fnIn()
+      logger.debug(`Timer ${this.id} executed`)
+      logger.blank()
+    }
+    this.t = t
+    this.state = state
+    if (this.state) this.#timer = setInterval(this.fn, this.t)
+    logger.debug(`Timer created: ${this.id} state: ${this.state}`)
+  }
 
-// console.log(gamesObjs)
+  stop = (log = true) => {
+    if (log) logger.debug(`Timer ${this.id} stopped`)
+    if (this.state) {
+      this.state = false
+      clearInterval(this.#timer)
+    }
+  }
+
+  start = (log = true) => {
+    if (log) logger.debug(`Timer ${this.id} started`)
+    if (!this.state) {
+      this.state = true
+      this.#timer = setInterval(this.fn, this.t)
+    }
+  }
+
+  reset = (nt = null, log = true) => {
+    if (log) logger.debug(`Timer ${this.id} reset`)
+    if (nt != null) this.t = nt
+    this.stop(false)
+    this.start(false)
+  }
+}
 
 const validateUser = (tok) => {
   if (users[tok]) {
@@ -68,37 +109,57 @@ const getUser = (tok) => {
   return users[tok]
 }
 
-class Timer {
-  #timer
-  constructor(fn, t, state = true) {
-    this.fn = fn
-    this.t = t
-    this.state = state
-    if (this.state) this.#timer = setInterval(fn, t)
-  }
-
-  stop = () => {
-    if (this.state) {
-      this.state = false
-      clearInterval(this.#timer)
+const findDeadRooms = () => {
+  let deadRooms = []
+  for (let room in rooms) {
+    if (rooms[room].users.length == 0) {
+      deadRooms.push([room, 'empty'])
+      continue
+    }
+    if (
+      Date.now() - rooms[room].createdAt > TIMEOUT &&
+      rooms[room].users.length <= 1
+    ) {
+      deadRooms.push([room, 'timeout'])
+      continue
+    }
+    if (Date.now() - rooms[room].lastActivity > TIMEOUT) {
+      deadRooms.push([room, 'inactivity'])
+      continue
     }
   }
-
-  start = () => {
-    if (!this.state) {
-      this.state = true
-      this.#timer = setInterval(this.fn, this.t)
-    }
-  }
-
-  reset = (nt = this.t) => {
-    // console.log('reset', this.#timer)
-    this.t = nt
-    this.stop()
-    this.start()
-    // console.log(this.#timer)
-  }
+  return deadRooms
 }
+
+const handelDeadRooms = () => {
+  let deadRooms = findDeadRooms()
+
+  // if (deadRooms.length > 0)
+  logger.info('Dead rooms: ' + logger.c.magenta(deadRooms.length))
+
+  deadRooms.forEach((room) => {
+    logger.info(
+      `Attempting to delete room ${logger.c.yellow(
+        room[0]
+      )}. Reason ${logger.c.yellow(room[1])}`
+    )
+    if (rooms[room[0]] != undefined) {
+      logger.info('Room found')
+      rooms[room[0]].game.terminate()
+
+      rooms[room[0]].users.forEach((user) => {
+        if (users[user] != undefined) {
+          users[user].room = null
+        }
+      })
+      delete rooms[room[0]]
+      logger.info('Deleted room ' + logger.c.yellow(room[0]))
+      logger.blank()
+    }
+  })
+}
+
+const deadGameTimer = new Timer(handelDeadRooms, TIMEOUT, false)
 
 app.get('/admin', (req, res) => {
   let obj = {
@@ -155,8 +216,6 @@ app.post('/newgame', (req, res) => {
     return res.json({ ok: false, err: 'Name is empty' })
   }
 
-  // console.log(req.body)
-
   logger.info(
     'New game request from ' +
       logger.c.magenta(user.name + ' (' + logger.c.yellow(user.id) + ')')
@@ -197,10 +256,9 @@ app.post('/newgame', (req, res) => {
       ok: false,
       error: 'Game type not found',
     })
+    logger.warn('Game type not found')
     return
   }
-
-  let madeNewRoom = false
 
   if (room) {
     if (rooms[room]) {
@@ -221,18 +279,19 @@ app.post('/newgame', (req, res) => {
       } else {
         rooms[room].users.push(user.id)
         user.room = room
+        logger.info('Joined room')
       }
-    } else if (gameType != null) {
+    } else {
       let newRoom = {
         id: room,
         users: [user.id],
         game: new gamesObjs[gameType].Game(room, io, args),
-        timer: null,
+        // timer: null,
+        createdAt: Date.now(),
+        lastActivity: Date.now(),
       }
       rooms[room] = newRoom
       user.room = room
-
-      madeNewRoom = true
 
       logger.info('Made new room with custom id ' + logger.c.yellow(room))
     }
@@ -242,44 +301,14 @@ app.post('/newgame', (req, res) => {
       id: newId,
       users: [user.id],
       game: new gamesObjs[gameType].Game(newId, io, args),
-      timer: null,
+      // timer: null,
+      createdAt: Date.now(),
+      lastActivity: Date.now(),
     }
     rooms[newRoom.id] = newRoom
     user.room = newRoom.id
 
-    madeNewRoom = true
-
     logger.info('Made new room with generated id ' + logger.c.yellow(newId))
-  }
-
-  if (madeNewRoom) {
-    rooms[user.room].timer = new Timer(() => {
-      if (!rooms[user.room]) {
-        logger.error('Room not found')
-        return
-      }
-
-      try {
-        let roomid = user.room
-        rooms[roomid].timer.stop()
-
-        logger.warn('del timer')
-        logger.raw(rooms)
-        logger.raw(user)
-        logger.raw(roomid)
-
-        rooms[roomid]?.game.terminate()
-
-        rooms[roomid].users.forEach((userId) => {
-          users[userId].room = null
-        })
-
-        rooms[roomid] = undefined
-      } catch (error) {
-        logger.error(error)
-      }
-    }, 1000 * 60 * 5)
-    // }, 1000 * 10)
   }
 
   res.json({ ok: true, room: user.room })
@@ -303,7 +332,7 @@ app.get('/exitGame', (req, res) => {
 
   if (game.game.leave(user)) {
     logger.info('Delete room ' + logger.c.yellow(user.room))
-    game.timer.stop()
+
     delete rooms[user.room]
   }
   game.users.splice(game.users.indexOf(user.id), 1)
@@ -420,7 +449,8 @@ io.on('connection', (socket) => {
   socket.on('game', (data) => {
     if (rooms[user.room] != undefined) {
       rooms[user.room].game.socket(data, user)
-      rooms[user.room].timer.reset()
+
+      rooms[user.room].lastActivity = Date.now()
     }
   })
 
@@ -432,6 +462,9 @@ io.on('connection', (socket) => {
       game.users.splice(game.users.indexOf(user.id), 1)
 
       user.room = null
+    }
+
+    if (rooms[user.room] != undefined) {
     }
 
     logger.info(
@@ -451,4 +484,6 @@ httpServer.listen(PORT, () => {
 
   logger.info(`Server started on port ${logger.c.green(PORT)}`)
   logger.blank()
+
+  deadGameTimer.start()
 })
