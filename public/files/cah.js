@@ -22,16 +22,6 @@ const wonModel = document.querySelector('#wonModel')
 const wonModelText = document.querySelector('#wonModelText')
 const wonModelCard = document.querySelector('#wonModelCard')
 
-// window.addEventListener(
-//   'beforeunload',
-//   function (e) {
-//     e.preventDefault()
-//     e.returnValue = ''
-//     return 'e'
-//   },
-//   { capture: true }
-// )
-
 ////////////////////////////////////////////
 
 let game = null
@@ -602,18 +592,6 @@ modelSubmitBtn.addEventListener('click', () => {
   modelSubmitBtn.classList.add('hidden')
   // hideModel()
 })
-
-window.onbeforeunload = function (e) {
-  e = e || window.event
-
-  if (!leaving) {
-    if (e) {
-      e.returnValue = 'Any string'
-    }
-
-    return 'Any string'
-  }
-}
 
 leave.addEventListener('click', () => {
   leaving = true

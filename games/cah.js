@@ -1,4 +1,5 @@
 import { makePack } from './utils/loadCards.js'
+import logger from '../logger.js'
 
 const userScema = {
   id: '',
@@ -55,6 +56,8 @@ class Game {
     this.blackCard = null
 
     this.gameLog = []
+
+    logger.event(this, 'Game created')
   }
 
   shuffle(array) {
@@ -73,7 +76,7 @@ class Game {
   }
 
   fn() {
-    console.log(69)
+    logger.debug(this, 'fn 69')
   }
 
   emit(who, data = null) {
@@ -156,6 +159,14 @@ class Game {
             cmd: 'join',
             data: this.users[user.id],
           })
+
+          logger.event(
+            this,
+            `${logger.c.magenta(
+              `${user.name} (${logger.c.cyan(user.id)})`
+            )} joined`
+          )
+          logger.blank()
         }
         break
       case 'sel':
@@ -195,11 +206,14 @@ class Game {
           if (this.status != 'waiting') return
           if (this.vip != user.id) return
 
+          logger.event(this, 'Attempting to start game')
+
           if (this.userArray.length < this.players.min) {
             this.emit(user.socket, {
               cmd: 'start',
               data: 'Not enough players!',
             })
+            logger.event(this, 'Not enough players!')
             return
           }
           if (this.userArray.length > this.players.max) {
@@ -207,20 +221,23 @@ class Game {
               cmd: 'start',
               data: 'Too many players! how tf',
             })
-
+            logger.event(this, 'Too many players! how tf')
             return
           }
 
-          let nope = false
-          this.userArray.forEach((id) => {
-            nope = nope || !this.users[id].ready
-          })
+          // let nope = false
+          // this.userArray.forEach((id) => {
+          //   nope = nope || !this.users[id].ready
+          // })
 
-          if (nope) {
+          let everyoneReady = this.userArray.every((id) => this.users[id].ready)
+
+          if (!everyoneReady) {
             this.emit(user.socket, {
               cmd: 'start',
               data: 'Someone not ready. Try again',
             })
+            logger.event(this, 'Someone not ready')
             return
           }
 
@@ -229,6 +246,8 @@ class Game {
           this.blackCard = this.#black.shift()
           this.status = 'playing'
           this.emitInfo()
+
+          logger.event(this, 'Successfully started game')
         }
         break
       case 'submit':
@@ -314,6 +333,7 @@ class Game {
         break
       case 'hack 1':
         {
+          // return
           if (!this.users[user.id]) return
 
           let user2 = data.data?.user || user.id
@@ -332,7 +352,5 @@ class Game {
     }
   }
 }
-
-// console.log(white)
 
 export { meta, Game }
