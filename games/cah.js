@@ -117,6 +117,8 @@ class Game {
           cmd: 'quit',
         })
 
+        logger.event(this, 'Game deleted')
+
         delete this
         return true
       }
