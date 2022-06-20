@@ -234,7 +234,7 @@ app.post('/newgame', (req, res) => {
     madeNewRoom = true
   }
 
-  if (madeNewRoom) {
+  if (madeNewRoom && false) {
     rooms[user.room].timer = new Timer(() => {
       let roomid = user.room
 
