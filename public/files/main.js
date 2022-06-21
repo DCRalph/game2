@@ -63,40 +63,43 @@ const getData = async () => {
 
     let sub = document.createElement('span')
     sub.classList.add('text-xs')
-    sub.innerText = `${r.id} - ${r.users} players`
+    sub.innerText = `${r.id} - ${r.users} players  - ${r.status}`
 
     div2.appendChild(title)
     div2.appendChild(sub)
 
-    let btn = document.createElement('button')
-    btn.classList.add(
-      'flex',
-      'sora',
-      'font-semibold',
-      'text-md',
-      'justify-center',
-      'rounded-lg',
-      'px-4',
-      'py-2',
-      'bg-red-600',
-      'shadow-lg',
-      'shadow-red-600/50',
-      'text-white',
-      'hover:bg-red-700',
-      'ring-red-500',
-      'active:ring-2'
-    )
-    btn.innerText = 'Join'
-
     div.appendChild(div2)
-    div.appendChild(btn)
 
-    btn.addEventListener('click', () => {
-      btn.classList.add('animate-spinFast')
-      setTimeout(() => {
-        NewGame(r.id)
-      }, 1000)
-    })
+    if (r.status == 'waiting') {
+      let btn = document.createElement('button')
+      btn.classList.add(
+        'flex',
+        'sora',
+        'font-semibold',
+        'text-md',
+        'justify-center',
+        'rounded-lg',
+        'px-4',
+        'py-2',
+        'bg-red-600',
+        'shadow-lg',
+        'shadow-red-600/50',
+        'text-white',
+        'hover:bg-red-700',
+        'ring-red-500',
+        'active:ring-2'
+      )
+      btn.innerText = 'Join'
+
+      btn.addEventListener('click', () => {
+        btn.classList.add('animate-spinFast')
+        setTimeout(() => {
+          NewGame(r.id)
+        }, 1000)
+      })
+
+      div.appendChild(btn)
+    }
 
     runningGames.appendChild(div)
   })

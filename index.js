@@ -198,6 +198,7 @@ app.get('/userData', (req, res) => {
       id: rooms[room].id,
       users: rooms[room].users.length,
       name: rooms[room].game.name,
+      status: rooms[room].game.status,
     }
 
     sendRooms.push(roomObj)

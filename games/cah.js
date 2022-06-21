@@ -57,6 +57,8 @@ class Game {
 
     this.gameLog = []
 
+    this.endFilter = 'all'
+
     logger.event(this, 'Game created')
   }
 
@@ -252,6 +254,18 @@ class Game {
           logger.event(this, 'Successfully started game')
         }
         break
+
+      case 'end':
+        {
+          if (!this.users[user.id]) return
+          if (this.status != 'playing') return
+          if (this.vip != user.id) return
+
+          this.status = 'ended'
+          this.emitInfo()
+          logger.event(this, 'Game ended')
+        }
+        break
       case 'submit':
         {
           if (!this.users[user.id]) return
@@ -331,6 +345,16 @@ class Game {
               user: this.userArray[data.data],
             },
           })
+        }
+        break
+      case 'endSelect':
+        {
+          if (!this.users[user.id]) return
+          if (this.vip != user.id) return
+          if (this.status != 'ended') return
+
+          this.endFilter = data.data
+          this.emitInfo()
         }
         break
       case 'hack 1':

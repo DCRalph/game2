@@ -2,7 +2,7 @@ const handBar = document.querySelector('#handBar')
 const handBarCards = document.querySelector('#handBarCards')
 const actionBar = document.querySelector('#actionBar')
 
-const leave = document.querySelector('#leave')
+const leave = document.querySelectorAll('#leave')
 const startBtn = document.querySelector('#startBtn')
 const endBtn = document.querySelector('#endBtn')
 const submitBtn = document.querySelector('#submitBtn')
@@ -22,11 +22,16 @@ const wonModel = document.querySelector('#wonModel')
 const wonModelText = document.querySelector('#wonModelText')
 const wonModelCard = document.querySelector('#wonModelCard')
 
+const endModel = document.querySelector('#endModel')
+const endModelText = document.querySelector('#endModelText')
+const endSelect = document.querySelector('#endSelect')
+const endModelCard = document.querySelector('#endModelCard')
+const endLeave = document.querySelector('#endLeave')
+
 ////////////////////////////////////////////
 
 let game = null
 let user = null
-let leaving = false
 let ping = 0
 
 let modelOrder = []
@@ -68,7 +73,6 @@ socket.on('connect', () => {
     emit('ping')
     ping += 1
     if (ping > 3) {
-      leaving = true
       window.location.href = '/exitGame'
     }
   }, 1000 * 5)
@@ -130,7 +134,7 @@ socket.on('game', (data) => {
         }
 
         if (game.status == 'playing') {
-          // endBtn.classList.remove('hidden')
+          endBtn.classList.remove('hidden')
         }
       }
 
@@ -143,6 +147,8 @@ socket.on('game', (data) => {
           game.blackCard != null
         )
       )
+
+      if (game.status == 'ended') renderEndModel()
 
       renderInfoBoard()
       renderNewCard()
@@ -311,6 +317,140 @@ const renderWonModel = (data) => {
   wonModelText.innerHTML = data.winner[1]
 
   wonModel.classList.remove('hidden')
+}
+
+const renderEndModel = () => {
+  endModelCard.innerHTML = ''
+
+  game.gameLog.forEach((g, i) => {
+    if (game.endFilter != 'all') if (game.endFilter != g.winner[0]) return
+    // return
+
+    let div1, div2, div3
+
+    let mainDiv = document.createElement('div')
+
+    mainDiv.classList.add(
+      'flex',
+      'flex-col',
+      'items-center',
+      'border-2',
+      'p-4',
+      'rounded-xl'
+    )
+
+    div1 = document.createElement('div')
+    div2 = document.createElement('div')
+
+    div1.classList.add('text-white', 'text-3xl', 'font-semibold')
+    div2.classList.add('text-white', 'text-xl')
+
+    div1.innerHTML = g.winner[1]
+    div2.innerHTML = `Round: ${i + 1}`
+
+    mainDiv.appendChild(div1)
+    mainDiv.appendChild(div2)
+
+    div1 = document.createElement('div')
+
+    div1.classList.add('flex', 'gap-4', 'mt-4')
+
+    div2 = document.createElement('div')
+
+    div2.classList.add(
+      'w-48',
+      'h-72',
+      'shrink-0',
+      'rounded-xl',
+      'bg-black',
+      'ring-4',
+      'ring-white',
+      'relative',
+      'select-none',
+      'overflow-y-scroll'
+    )
+
+    div3 = document.createElement('div')
+    div3.classList.add('text-xl', 'text-white', 'font-semibold', 'px-4', 'py-2')
+    div3.innerHTML = g.black.text
+
+    div2.appendChild(div3)
+
+    div1.appendChild(div2)
+
+    div2 = document.createElement('div')
+
+    div2.classList.add(
+      'w-48',
+      'h-72',
+      'shrink-0',
+      'rounded-xl',
+      'bg-white',
+      'ring-4',
+      'ring-black',
+      'relative',
+      'select-none',
+      'overflow-y-scroll'
+    )
+
+    // div3 = document.createElement('div')
+    // div3.classList.add('text-xl', 'text-black', 'font-semibold', 'px-4', 'py-2')
+    // div3.innerHTML = g.white[0]
+
+    // div2.appendChild(div3)
+
+    g.white.forEach((text, i) => {
+      let border = i != 0 ? ['border-t-2', 'border-gray-300'] : []
+      let div = document.createElement('div')
+      div.classList.add(
+        ...border,
+        'text-xl',
+        'text-black',
+        'font-semibold',
+        'px-4',
+        'py-2'
+      )
+      div.innerHTML = text
+
+      div2.appendChild(div)
+    })
+
+    div1.appendChild(div2)
+
+    mainDiv.appendChild(div1)
+
+    endModelCard.appendChild(mainDiv)
+  })
+
+  if (game.endFilter == 'all') {
+    endModelText.innerHTML = `Game Over`
+  } else {
+    endModelText.innerHTML = `${game.users[game.endFilter].name}`
+  }
+
+  if (user.vip) {
+    endSelect.innerHTML = ''
+
+    let opt = document.createElement('option')
+    opt.value = 'all'
+    opt.innerHTML = 'All'
+    endSelect.appendChild(opt)
+
+    game.userArray.forEach((id, i) => {
+      let thisUser = game.users[id]
+      let opt = document.createElement('option')
+      opt.value = thisUser.id
+      opt.innerHTML = thisUser.name
+      endSelect.appendChild(opt)
+    })
+
+    endSelect.value = game.endFilter
+
+    endSelect.classList.remove('hidden')
+    endLeave.classList.remove('hidden')
+  } else endSelect.classList.add('hidden')
+
+  endModel.classList.remove('hidden')
 }
 
 const renderInfoBoard = () => {
@@ -554,6 +694,16 @@ const renderHand = () => {
 
 // ########################################################
 
+const handleLeave = () => {
+  window.location.href = '/exitGame'
+}
+
+leave.forEach((btn) => {
+  btn.addEventListener('click', handleLeave)
+})
+
+endLeave.addEventListener('click', handleLeave)
+
 handBar.addEventListener('click', (e) => {
   const clicked = e.target.id
   if (clicked == 'handBar') return
@@ -598,11 +748,6 @@ modelSubmitBtn.addEventListener('click', () => {
   // hideModel()
 })
 
-leave.addEventListener('click', () => {
-  leaving = true
-  window.location.href = '/exitGame'
-})
-
 startBtn.addEventListener('click', () => {
   emit('start')
 })
@@ -629,6 +774,10 @@ handBar.addEventListener('wheel', (e) => {
     handBar.children[0].style.left = handBar.scrollLeft + 'px'
     handBar.children[0].style.right = -handBar.scrollLeft + 'px'
   }
+})
+
+endSelect.addEventListener('change', (e) => {
+  emit('endSelect', endSelect.value)
 })
 
 const logScores = () => {

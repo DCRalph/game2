@@ -89,6 +89,39 @@
       </div>
     </div>
 
+    <div class="fixed z-50 inset-0 hidden" id="endModel">
+      <div class="w-full h-full p-16 backdrop-blur">
+        <div
+          class="w-full h-full flex items-center flex-col bg-gray-800 ring-teal-600 ring-4 rounded-xl"
+        >
+          <div
+            class="text-white w-full flex justify-center items-center rounded-t-xl text-2xl p-2 relative border-b-2 sora font-semibold"
+          >
+            <select
+              id="endSelect"
+              class="text-black px-2 text-md ml-2 rounded-lg outline-none ring-0 ring-blue-600 focus:ring-2 absolute left-0"
+            >
+              <option>fuk</option>
+            </select>
+
+            <span id="endModelText">Game Over</span>
+
+            <button
+              class="absolute hidden right-0 m-1 flex sora text-lg font-semibold justify-center rounded-lg px-3 py-1 bg-red-600 shadow-lg shadow-red-600/50 text-white hover:bg-red-700 ring-red-500 active:ring-2"
+              id="endLeave"
+            >
+              Leave
+            </button>
+          </div>
+
+          <div
+            class="w-full flex flex-col items-center overflow-y-scroll relative p-4 gap-4"
+            id="endModelCard"
+          ></div>
+        </div>
+      </div>
+    </div>
+
     <div
       class="text-white bg-gray-500 font-semibold text-xl md:text-4xl h-8 md:h-12 flex shrink-0 justify-center items-center"
     >
