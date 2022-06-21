@@ -183,9 +183,11 @@ app.get('/', (req, res) => {
     maxAge: 1000 * 60 * 60 * 24 * 365,
   })
 
-  // console.log(users)
-
   res.sendFile(__dirname + '/public/index.html')
+})
+
+app.get('/favicon.ico', (req, res) => {
+  res.sendFile(__dirname + '/public/files/dcralph.png')
 })
 
 app.get('/tailwind.css', (req, res) => {
