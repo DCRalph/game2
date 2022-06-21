@@ -315,19 +315,27 @@ class Game {
           this.userArray.forEach((id) => {
             this.users[id].submited = false
 
-            let tempHand = this.users[id].hand
-            this.users[id].selHand.forEach((cardIndex) => {
-              this.users[id].hand.splice(
-                this.users[id].hand.indexOf(tempHand[cardIndex]),
-                1
-              )
+            // let tempHand = this.users[id].hand
+            // this.users[id].selHand.forEach((cardIndex) => {
+            //   this.users[id].hand.splice(
+            //     this.users[id].hand.indexOf(tempHand[cardIndex]),
+            //     1
+            //   )
+            // })
+
+            let selHand = this.users[id].selHand.sort((a, b) => b - a)
+
+            selHand.forEach((i) => {
+              this.users[id].hand.splice(i, 1)
             })
+
+            this.users[id].selHand = []
+
             if (this.users[id].hand.length != 5) {
               this.users[id].hand.push(
                 ...this.#white.splice(0, 5 - this.users[id].hand.length)
               )
             }
-            this.users[id].selHand = []
           })
 
           this.round++

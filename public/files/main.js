@@ -146,6 +146,7 @@ const NewGame = async (id = null) => {
     window.location.href = `/game/${data.room}`
   } else {
     alert(data.error)
+    joinGame.classList.remove('animate-spinFast')
   }
 }
 
