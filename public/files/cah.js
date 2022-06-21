@@ -174,6 +174,121 @@ socket.on('game', (data) => {
   }
 })
 
+//////////////////////////////////////////////////////
+
+const makeSel = (n = 0) => {
+  let div1 = document.createElement('div')
+
+  div1.classList.add(
+    'absolute',
+    'inset-0',
+    'bg-green-500',
+    'rounded-xl',
+    'ring-2',
+    'ring-green-600',
+    'bg-opacity-50',
+    'flex',
+    'flex-col',
+    'justify-center',
+    'items-center',
+    'pointer-events-none'
+  )
+
+  let svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+  svg.setAttribute('fill', 'none')
+  svg.setAttribute('viewBox', '0 0 24 24')
+  svg.setAttribute('stroke', 'currentColor')
+  svg.setAttribute('stroke-width', '2')
+
+  let path = document.createElementNS('http://www.w3.org/2000/svg', 'path')
+  path.setAttribute('stroke-linecap', 'round')
+  path.setAttribute('stroke-linejoin', 'round')
+  path.setAttribute('d', 'M5 13l4 4L19 7')
+
+  svg.appendChild(path)
+  div1.appendChild(svg)
+
+  if (n != 0) {
+    let span = document.createElement('span')
+    span.classList.add('text-3xl')
+    span.innerText = n
+    div1.appendChild(span)
+  }
+  return div1
+}
+
+const makeWhiteCard = (white) => {
+  let div1 = document.createElement('div')
+
+  div1.classList.add(
+    'w-48',
+    'h-72',
+    'shrink-0',
+    'rounded-xl',
+    'bg-white',
+    'ring-4',
+    'ring-black',
+    'relative',
+    'select-none',
+    'overflow-y-scroll',
+    'relitive'
+  )
+
+  white.forEach((text, i) => {
+    let border = i != 0 ? ['border-t-2', 'border-gray-300'] : []
+    let div = document.createElement('div')
+    div.classList.add(
+      ...border,
+      'text-xl',
+      'text-black',
+      'font-semibold',
+      'px-4',
+      'py-2',
+      'pointer-events-none'
+    )
+    div.innerHTML = text
+
+    div1.appendChild(div)
+  })
+
+  return div1
+}
+
+const makeBlackCard = (text) => {
+  let div1 = document.createElement('div')
+  let div2 = document.createElement('div')
+
+  div1.classList.add(
+    'w-48',
+    'h-72',
+    'shrink-0',
+    'rounded-xl',
+    'bg-black',
+    'ring-4',
+    'ring-white',
+    'relative',
+    'select-none',
+    'overflow-y-scroll',
+    'relitive'
+  )
+
+  div2.classList.add(
+    'text-xl',
+    'text-white',
+    'font-semibold',
+    'px-4',
+    'py-2',
+    'pointer-events-none'
+  )
+  div2.innerHTML = text
+
+  div1.appendChild(div2)
+
+  return div1
+}
+
+//////////////////////////////////////////////////////
+
 const hideModel = () => {
   model.classList.add('hidden')
   modelSubmitBtn.classList.add('hidden')
@@ -183,7 +298,6 @@ const hideModel = () => {
 }
 
 const renderModel = (shuffelModel = false) => {
-  model.classList.remove('hidden')
   if (game.users[game.userArray[game.turn]].id == user.id) {
     modelSubmitBtn.classList.remove('hidden')
 
@@ -194,53 +308,6 @@ const renderModel = (shuffelModel = false) => {
     } is picking.`
   }
   showModel = true
-
-  const makeSel = (i) => {
-    if (game.selModel == i) {
-      return `<div class="absolute inset-0 opacity-50 rounded-xl bg-green-500 ring-2 ring-green-600 pointer-events-none"></div>
-    <div class="absolute inset-0 flex flex-col justify-center items-center pointer-events-none">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="h-20 w-20"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        stroke-width="2"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          d="M5 13l4 4L19 7"
-        />
-      </svg>
-    </div>`
-    }
-    return ''
-  }
-
-  const makeInner = (answers) => {
-    let inner = ''
-    answers.forEach((text, i) => {
-      let border = i != 0 ? 'border-t-2 border-gray-300' : ''
-      inner += `
-    <div
-      class="text-xl font-semibold px-4 py-2 pointer-events-none ${border}"
-    >
-      ${text}
-    </div>`
-    })
-    return inner
-  }
-
-  const makeCard = (id, answers) => {
-    return `<div
-    class="relative w-48 h-72 overflow-y-scroll bg-white ring-4 ring-black rounded-xl select-none"
-    id="model-${id}"
-  >
-    ${makeInner(answers)}
-    ${makeSel(id)}
-  </div>`
-  }
 
   let cards = []
 
@@ -253,25 +320,29 @@ const renderModel = (shuffelModel = false) => {
       answers.push(thisUser.hand[id2])
     })
 
-    cards.push(makeCard(i, answers))
-  })
+    let div1 = makeWhiteCard(answers)
+    div1.id = `model-${i}`
 
-  // for (let i = 0; i < 5; i++) {
-  //   cards.push(makeCard(i, ['cum', 'cum2']))
-  // }
+    if (game.selModel == i) {
+      div1.appendChild(makeSel())
+    }
+
+    cards.push(div1)
+  })
 
   if (shuffelModel) {
     modelOrder = shuffle([...Array(cards.length).keys()])
   }
 
-  let html = ''
+  pickBox.innerHTML = ''
+
   cards.forEach((c, i) => {
-    html += cards[modelOrder[i]]
+    pickBox.appendChild(cards[modelOrder[i]])
   })
 
   modelQuestionCard.innerHTML = game.blackCard.text
 
-  pickBox.innerHTML = html
+  model.classList.remove('hidden')
 }
 
 const hideWonModel = () => {
@@ -279,42 +350,12 @@ const hideWonModel = () => {
 }
 
 const renderWonModel = (data) => {
-  const makeInner = (answers) => {
-    let inner = ''
-    answers.forEach((text, i) => {
-      let border = i != 0 ? 'border-t-2 border-gray-300' : ''
-      inner += `
-    <div
-      class="text-xl font-semibold px-4 py-2 ${border}"
-    >
-      ${text}
-    </div>`
-    })
-    return inner
-  }
-
-  const makeCard = () => {
-    return `<div
-    class="w-48 h-72 shrink-0 rounded-xl bg-black ring-4 ring-white relative select-none"
-  >
-    <div
-      class="text-xl text-white font-semibold px-4 py-2"
-    >${data.black.text}</div>
-  </div>
-
-    <div
-    class="relative w-48 h-72 overflow-y-scroll bg-white ring-4 ring-black rounded-xl select-none"
-  >
-    ${makeInner(data.white)}
-  </div>`
-  }
-
-  let html = ''
-
-  html += makeCard()
-
-  wonModelCard.innerHTML = html
   wonModelText.innerHTML = data.winner[1]
+
+  wonModelCard.innerHTML = ''
+
+  wonModelCard.appendChild(makeBlackCard(data.black.text))
+  wonModelCard.appendChild(makeWhiteCard(data.white))
 
   wonModel.classList.remove('hidden')
 }
@@ -353,69 +394,10 @@ const renderEndModel = () => {
 
     div1 = document.createElement('div')
 
-    div1.classList.add('flex', 'gap-4', 'mt-4')
+    div1.classList.add('flex', 'flex-wrap', 'justify-center', 'gap-4', 'mt-4')
 
-    div2 = document.createElement('div')
-
-    div2.classList.add(
-      'w-48',
-      'h-72',
-      'shrink-0',
-      'rounded-xl',
-      'bg-black',
-      'ring-4',
-      'ring-white',
-      'relative',
-      'select-none',
-      'overflow-y-scroll'
-    )
-
-    div3 = document.createElement('div')
-    div3.classList.add('text-xl', 'text-white', 'font-semibold', 'px-4', 'py-2')
-    div3.innerHTML = g.black.text
-
-    div2.appendChild(div3)
-
-    div1.appendChild(div2)
-
-    div2 = document.createElement('div')
-
-    div2.classList.add(
-      'w-48',
-      'h-72',
-      'shrink-0',
-      'rounded-xl',
-      'bg-white',
-      'ring-4',
-      'ring-black',
-      'relative',
-      'select-none',
-      'overflow-y-scroll'
-    )
-
-    // div3 = document.createElement('div')
-    // div3.classList.add('text-xl', 'text-black', 'font-semibold', 'px-4', 'py-2')
-    // div3.innerHTML = g.white[0]
-
-    // div2.appendChild(div3)
-
-    g.white.forEach((text, i) => {
-      let border = i != 0 ? ['border-t-2', 'border-gray-300'] : []
-      let div = document.createElement('div')
-      div.classList.add(
-        ...border,
-        'text-xl',
-        'text-black',
-        'font-semibold',
-        'px-4',
-        'py-2'
-      )
-      div.innerHTML = text
-
-      div2.appendChild(div)
-    })
-
-    div1.appendChild(div2)
+    div1.appendChild(makeBlackCard(g.black.text))
+    div1.appendChild(makeWhiteCard(g.white))
 
     mainDiv.appendChild(div1)
 
@@ -460,10 +442,6 @@ const renderInfoBoard = () => {
     ['White Cards', game.whiteLen],
     ['Black Cards', game.blackLen],
   ]
-
-  //   <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-  //   <path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-  // </svg>
 
   let path
 
@@ -592,8 +570,6 @@ const renderInfoBoard = () => {
   infoBoard.innerHTML = ''
   infoBoard.appendChild(table1)
   infoBoard.appendChild(table2)
-
-  // infoBoard.innerHTML = html
 }
 
 const renderNewCard = () => {
@@ -614,18 +590,15 @@ const renderNewCard = () => {
 }
 
 const renderBlack = () => {
-  let html = ''
+  blackCard.innerHTML = ''
 
   if (game.blackCard == null) {
-    html += `<span class="flex justify-center items-center h-full"
-    >No Card</span
-  >`
+    blackCard.appendChild(makeBlackCard('No Card'))
+
     if (game.status == 'waiting') actionBar.innerHTML = `Waiting...`
     else actionBar.innerHTML = `Waiting for next round...`
   } else {
-    html += `<span class="flex h-full"
-    >${game.blackCard.text}</span
-  >`
+    blackCard.appendChild(makeBlackCard(game.blackCard.text))
     if (game.userArray[game.turn] == user.id)
       actionBar.innerHTML = `Wait for players to pick...`
     else
@@ -633,63 +606,51 @@ const renderBlack = () => {
         game.blackCard.pick > 1 ? 's' : ''
       }`
   }
-
-  blackCard.innerHTML = html
 }
 
 const renderHand = () => {
-  const makeSel = (n) => {
-    if (user.selHand.includes(n)) {
-      let index = user.selHand.indexOf(n) + 1
-      return `<div class="absolute inset-0 opacity-50 rounded-xl bg-green-500 ring-2 ring-green-600 pointer-events-none"></div>
-    <div class="absolute inset-0 flex flex-col justify-center items-center pointer-events-none">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="h-20 w-20"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        stroke-width="2"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          d="M5 13l4 4L19 7"
-        />
-      </svg>
-      <span class="text-3xl">${index}</span>
-    </div>`
-    }
-    return ''
-  }
-  const makeCard = (title, i) => {
-    return `<div
-    class="w-48 h-72 shrink-0 rounded-xl bg-white ring-4 ring-black relative select-none pointer-events-auto"
-    id="white-card-${i}"
-  >
-    <div class="text-xl font-semibold px-4 py-2 pointer-events-none">${title}</div>
-    ${makeSel(i)}
-  </div>`
-  }
-
-  let html = ''
+  handBarCards.innerHTML = ''
 
   if (user.submited) {
-    html += `<div
-    class="absolute z-20 inset-0 bg-opacity-50 bg-gray-500 pointer-events-none"
-  >
-    <div
-      class="absolute z-30 text-white text-4xl inset-0 flex flex-col justify-center items-center pointer-events-none"
-    >
-      Submited
-    </div>
-  </div>`
+    let div1 = document.createElement('div')
+    div1.classList.add(
+      'absolute',
+      'z-20',
+      'inset-0',
+      'bg-opacity-50',
+      'bg-gray-500',
+      'pointer-events-none'
+    )
+
+    let div2 = document.createElement('div')
+    div2.classList.add(
+      'absolute',
+      'z-30',
+      'text-white',
+      'text-4xl',
+      'inset-0',
+      'flex',
+      'flex-col',
+      'justify-center',
+      'items-center',
+      'pointer-events-none'
+    )
+    div2.innerHTML = 'Submited'
+
+    div1.appendChild(div2)
+    handBarCards.appendChild(div1)
   }
 
   user.hand.forEach((card, i) => {
-    html += makeCard(card, i)
+    let div = makeWhiteCard([card])
+    div.id = `white-card-${i}`
+    if (user.selHand.includes(i)) {
+      let index = user.selHand.indexOf(i) + 1
+
+      div.appendChild(makeSel(index))
+    }
+    handBarCards.appendChild(div)
   })
-  handBarCards.innerHTML = html
 }
 
 // ########################################################

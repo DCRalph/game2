@@ -1636,6 +1636,10 @@ body {
     border-left-width: 2px;
   }
 
+  .md\:p-8{
+    padding: 2rem;
+  }
+
   .md\:pl-24{
     padding-left: 6rem;
   }
@@ -1653,5 +1657,11 @@ body {
   .md\:text-lg{
     font-size: 1.125rem;
     line-height: 1.75rem;
+  }
+}
+
+@media (min-width: 1024px){
+  .lg\:p-16{
+    padding: 4rem;
   }
 }
