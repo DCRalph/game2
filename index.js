@@ -429,6 +429,11 @@ io.on('connection', (socket) => {
     return socket.disconnect()
   }
 
+  if (user.socket) {
+    logger.warn('User already connected')
+    return user.socket.disconnect()
+  }
+
   users[user.id].socket = socket.id
 
   socket.join(user.room)
