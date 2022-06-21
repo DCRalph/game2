@@ -90,7 +90,8 @@ class Timer {
   }
 }
 
-const validateUser = (tok) => {
+const validateUser = (req) => {
+  let tok = req.cookies.token
   if (users[tok]) {
     return users[tok]
   } else {
@@ -99,6 +100,7 @@ const validateUser = (tok) => {
       room: null,
       name: null,
       socket: null,
+      ip: req.headers['x-forwarded-for'] || req.socket.remoteAddress,
     }
     users[newUser.id] = newUser
     return newUser
@@ -162,17 +164,21 @@ const handelDeadRooms = () => {
 const deadGameTimer = new Timer(handelDeadRooms, TIMEOUT, false)
 
 app.get('/admin', (req, res) => {
-  let obj = {
-    users,
-    rooms,
-  }
+  if (req.query.pwd == '123') {
+    let obj = {
+      users,
+      rooms,
+    }
 
-  res.json(obj)
+    res.json(obj)
+  } else {
+    res.status(401).send('Unauthorized')
+  }
 })
 
 app.get('/', (req, res) => {
   let token = req.cookies.token
-  let user = validateUser(token)
+  let user = validateUser(req)
   res.cookie('token', user.id, {
     maxAge: 1000 * 60 * 60 * 24 * 365,
   })
@@ -208,8 +214,7 @@ app.get('/userData', (req, res) => {
 })
 
 app.post('/newgame', (req, res) => {
-  let token = req.cookies.token
-  let user = validateUser(token)
+  let user = validateUser(req)
 
   user.name = req.body.name
 
