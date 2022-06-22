@@ -10,6 +10,7 @@ const userScema = {
   submited: false,
   score: 0,
   vip: false,
+  connected: false,
 }
 
 const meta = {
@@ -107,6 +108,15 @@ class Game {
     delete this
   }
 
+  socketConnection(user, state, emit = true) {
+    logger.debug('socketConnection')
+    if (this.users[user]) {
+      this.users[user].connected = state
+      logger.debug(`${user} ${state ? 'connected' : 'disconnected'}`)
+      if (emit) this.emitInfo()
+    }
+  }
+
   leave(user) {
     if (this.users[user.id]) {
       this.#white = this.#white.concat(this.users[user.id].hand)
@@ -158,7 +168,10 @@ class Game {
               this.vip = user.id
             }
             this.users[user.id].vip = this.vip == user.id
+            // this.users[user.id].connected = true
           }
+          this.socketConnection(user.id, true, false)
+
           this.emit(user.socket, {
             cmd: 'join',
             data: this.users[user.id],
@@ -271,16 +284,13 @@ class Game {
           if (!this.users[user.id]) return
           this.users[user.id].submited = true
 
-          let nope = false
-          this.userArray.forEach((id) => {
-            if (this.userArray[this.turn] != id) {
-              nope = nope || !this.users[id].submited
-            }
-          })
+          this.everyoneSubmited = this.userArray.every((id) => {
+            if (this.userArray[this.turn] == id) return true
+            if (this.users[id].connected == false) return true
+            return this.users[id].submited
 
-          if (!nope) {
-            this.everyoneSubmited = true
-          }
+            return true
+          })
 
           this.emitInfo()
         }
@@ -293,8 +303,13 @@ class Game {
           if (!this.everyoneSubmited) return
           if (data.data == undefined) return
 
-          this.turn++
-          if (this.turn >= this.userArray.length) this.turn = 0
+          let nextTurn = this.turn + 1
+          if (nextTurn >= this.userArray.length) nextTurn = 0
+          while (this.users[this.userArray[nextTurn]].connected == false) {
+            nextTurn++
+            if (nextTurn >= this.userArray.length) nextTurn = 0
+          }
+          this.turn = nextTurn
 
           this.users[this.userArray[data.data]].score++
 

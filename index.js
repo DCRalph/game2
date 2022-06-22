@@ -263,9 +263,9 @@ app.post('/newgame', (req, res) => {
         // rooms[user.room].game.status == 'playing' &&
         rooms[user.room].users.findIndex((u) => u.id == user.id) != -1
       ) {
-        rooms[user.room].users[
-          rooms[user.room].users.findIndex((u) => u.id == user.id)
-        ].connected = false
+        // rooms[user.room].users[
+        //   rooms[user.room].users.findIndex((u) => u.id == user.id)
+        // ].connected = false
 
         user.room = room
         logger.info('Joined room')
@@ -525,6 +525,8 @@ io.on('connection', (socket) => {
       rooms[user.room].users[
         rooms[user.room].users.findIndex((u) => u.id == user.id)
       ].connected = false
+
+      rooms[user.room].game.socketConnection(user.id, false)
     }
 
     logger.info(
