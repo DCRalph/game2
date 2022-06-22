@@ -371,6 +371,8 @@ app.get('/exitGame', (req, res) => {
   if (rooms[user.room] == undefined) return res.redirect('/')
   let game = rooms[user.room]
 
+  let room = structuredClone(user.room)
+
   logger.info(
     'Exit request from ' +
       logger.c.magenta(user.name + ' (' + logger.c.yellow(user.id) + ')')
@@ -379,15 +381,20 @@ app.get('/exitGame', (req, res) => {
   if (game.game.leave(user)) {
     logger.info('Delete room ' + logger.c.yellow(user.room))
 
-    delete rooms[user.room]
+    game.users.forEach((u) => {
+      let U = users[u.id]
+      if (U) {
+        U.room = null
+      }
+    })
+
+    delete rooms[room]
   } else {
     game.users.splice(
       game.users.findIndex((u) => u.id == user.id),
       1
     )
   }
-
-  user.room = null
 
   res.redirect('/')
 
