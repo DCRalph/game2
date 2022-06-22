@@ -376,20 +376,22 @@ app.get('/exitGame', (req, res) => {
       logger.c.magenta(user.name + ' (' + logger.c.yellow(user.id) + ')')
   )
 
+  let users = game.users
+
   if (game.game.leave(user)) {
     logger.info('Delete room ' + logger.c.yellow(user.room))
 
-    game.users.forEach((u) => {
+    delete rooms[user.room]
+
+    users.forEach((u) => {
       users[u.id].room = null
     })
-
-    delete rooms[user.room]
+  } else {
+    game.users.splice(
+      game.users.findIndex((u) => u.id == user.id),
+      1
+    )
   }
-  // game.users.splice(game.users.indexOf(user.id), 1)
-  game.users.splice(
-    game.users.findIndex((u) => u.id == user.id),
-    1
-  )
 
   user.room = null
 
