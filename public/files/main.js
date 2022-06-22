@@ -40,9 +40,74 @@ const getData = async () => {
 
   if (localStorage.getItem('name')) {
     nameBox.value = localStorage.getItem('name')
-  } else if (data.user.name) nameBox.value = data.user.name
+  }
+  // } else if (data.user.name) nameBox.value = data.user.name
+
+  if (data.inGame != false) {
+    let r = data.sendRooms.find((r) => r.id == data.inGame)
+
+    let div = document.createElement('div')
+    div.classList.add(
+      'bg-white',
+      'rounded-lg',
+      'flex',
+      'py-2',
+      'px-4',
+      'justify-between',
+      'items-center'
+    )
+
+    let div2 = document.createElement('div')
+    div2.classList.add('flex', 'flex-col')
+
+    let title = document.createElement('span')
+    title.classList.add('text-lg')
+    title.innerText = r.name
+
+    let sub = document.createElement('span')
+    sub.classList.add('text-xs')
+    sub.innerText = `${r.id} - ${r.users.length} players  - ${r.status}`
+
+    div2.appendChild(title)
+    div2.appendChild(sub)
+
+    div.appendChild(div2)
+
+    let btn = document.createElement('button')
+    btn.classList.add(
+      'flex',
+      'sora',
+      'font-semibold',
+      'text-md',
+      'justify-center',
+      'rounded-lg',
+      'px-4',
+      'py-2',
+      'bg-purple-600',
+      'shadow-lg',
+      'shadow-purple-600/50',
+      'text-white',
+      'hover:bg-purple-700',
+      'ring-purple-500',
+      'active:ring-2'
+    )
+
+    btn.innerText = 'Rejoin'
+
+    btn.addEventListener('click', () => {
+      btn.classList.add('animate-spinFast')
+      setTimeout(() => {
+        NewGame(r.id)
+      }, 1000)
+    })
+
+    div.appendChild(btn)
+
+    runningGames.appendChild(div)
+  }
 
   data.sendRooms.forEach((r) => {
+    if (r.id == data.inGame) return
     let div = document.createElement('div')
     div.classList.add(
       'bg-white',
@@ -71,8 +136,8 @@ const getData = async () => {
     div.appendChild(div2)
 
     if (
-      r.status == 'waiting' ||
-      r.users.findIndex((u) => u.id == data.user.id) != -1
+      r.status == 'waiting'
+      // || r.users.findIndex((u) => u.id == data.user.id) != -1
     ) {
       let btn = document.createElement('button')
       btn.classList.add(

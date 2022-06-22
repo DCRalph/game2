@@ -199,18 +199,22 @@ app.get('/userData', (req, res) => {
   let user = getUser(token)
   if (typeof user == 'undefined') return res.json({ ok: false })
 
+  let inGame = rooms[user.room] != undefined ? user.room : false
+
   let sendRooms = []
   for (let room in rooms) {
     if (rooms[room] == undefined) continue
+    // if (rooms[user.room] == undefined) continue
+
     let users = rooms[room].users.map((user) => {
       return {
         id: user.id,
         name: user.name || '[Anonymous]',
       }
     })
+
     let roomObj = {
       id: rooms[room].id,
-      // users: rooms[room].users.length,
       users,
       name: rooms[room].game.name,
       status: rooms[room].game.status,
@@ -219,7 +223,7 @@ app.get('/userData', (req, res) => {
     sendRooms.push(roomObj)
   }
 
-  res.json({ version: VERSION, games, user, sendRooms })
+  res.json({ version: VERSION, games, sendRooms, inGame })
 })
 
 app.post('/newgame', (req, res) => {
@@ -256,12 +260,12 @@ app.post('/newgame', (req, res) => {
   if (user.room) {
     if (rooms[user.room]) {
       if (
-        rooms[room].game.status == 'playing' &&
-        rooms[room].users.findIndex((u) => u.id == user.id) != -1
+        // rooms[user.room].game.status == 'playing' &&
+        rooms[user.room].users.findIndex((u) => u.id == user.id) != -1
       ) {
-        rooms[room].users[
-          rooms[room].users.findIndex((u) => u.id == user.id)
-        ].connected = true
+        rooms[user.room].users[
+          rooms[user.room].users.findIndex((u) => u.id == user.id)
+        ].connected = false
 
         user.room = room
         logger.info('Joined room')
@@ -271,10 +275,20 @@ app.post('/newgame', (req, res) => {
         return
       }
 
+      logger.debug('here')
+
       rooms[user.room].users.splice(
         rooms[user.room].users.findIndex((u) => u.id == user.id),
         1
       )
+    }
+
+    if (user.room) {
+      if (rooms[user.room].game.leave(user)) {
+        logger.info('Delete room ' + logger.c.yellow(user.room))
+
+        delete rooms[user.room]
+      }
     }
 
     user.room = null
@@ -463,6 +477,11 @@ io.on('connection', (socket) => {
   let user = getUser(token)
   if (typeof user == 'undefined') {
     logger.warn('User not found')
+    return socket.disconnect()
+  }
+
+  if (rooms[user.room] == undefined) {
+    logger.warn('Room not found')
     return socket.disconnect()
   }
 
