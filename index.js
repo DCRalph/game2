@@ -379,6 +379,10 @@ app.get('/exitGame', (req, res) => {
   if (game.game.leave(user)) {
     logger.info('Delete room ' + logger.c.yellow(user.room))
 
+    game.users.forEach((u) => {
+      users[u.id].room = null
+    })
+
     delete rooms[user.room]
   }
   // game.users.splice(game.users.indexOf(user.id), 1)
