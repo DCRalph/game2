@@ -254,7 +254,7 @@ app.post('/newgame', (req, res) => {
       args[key] = value
     }
     // console.log(args)
-    logger.debug(args)
+    // logger.debug(args)
   }
 
   if (user.room) {
@@ -274,8 +274,6 @@ app.post('/newgame', (req, res) => {
 
         return
       }
-
-      logger.debug('here')
 
       rooms[user.room].users.splice(
         rooms[user.room].users.findIndex((u) => u.id == user.id),
