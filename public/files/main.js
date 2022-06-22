@@ -63,14 +63,17 @@ const getData = async () => {
 
     let sub = document.createElement('span')
     sub.classList.add('text-xs')
-    sub.innerText = `${r.id} - ${r.users} players  - ${r.status}`
+    sub.innerText = `${r.id} - ${r.users.length} players  - ${r.status}`
 
     div2.appendChild(title)
     div2.appendChild(sub)
 
     div.appendChild(div2)
 
-    if (r.status == 'waiting') {
+    if (
+      r.status == 'waiting' ||
+      r.users.findIndex((u) => u.id == data.user.id) != -1
+    ) {
       let btn = document.createElement('button')
       btn.classList.add(
         'flex',

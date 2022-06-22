@@ -150,8 +150,8 @@ const handelDeadRooms = () => {
       rooms[room[0]].game.terminate()
 
       rooms[room[0]].users.forEach((user) => {
-        if (users[user] != undefined) {
-          users[user].room = null
+        if (users[user.id] != undefined) {
+          users[user.id].room = null
         }
       })
       delete rooms[room[0]]
@@ -202,9 +202,16 @@ app.get('/userData', (req, res) => {
   let sendRooms = []
   for (let room in rooms) {
     if (rooms[room] == undefined) continue
+    let users = rooms[room].users.map((user) => {
+      return {
+        id: user.id,
+        name: user.name || '[Anonymous]',
+      }
+    })
     let roomObj = {
       id: rooms[room].id,
-      users: rooms[room].users.length,
+      // users: rooms[room].users.length,
+      users,
       name: rooms[room].game.name,
       status: rooms[room].game.status,
     }
@@ -248,7 +255,26 @@ app.post('/newgame', (req, res) => {
 
   if (user.room) {
     if (rooms[user.room]) {
-      rooms[user.room].users.splice(rooms[user.room].users.indexOf(user.id), 1)
+      if (
+        rooms[room].game.status == 'playing' &&
+        rooms[room].users.findIndex((u) => u.id == user.id) != -1
+      ) {
+        rooms[room].users[
+          rooms[room].users.findIndex((u) => u.id == user.id)
+        ].connected = true
+
+        user.room = room
+        logger.info('Joined room')
+
+        res.json({ ok: true, room: user.room })
+
+        return
+      }
+
+      rooms[user.room].users.splice(
+        rooms[user.room].users.findIndex((u) => u.id == user.id),
+        1
+      )
     }
 
     user.room = null
@@ -285,14 +311,14 @@ app.post('/newgame', (req, res) => {
         logger.warn('Game is already started')
         return
       } else {
-        rooms[room].users.push(user.id)
+        rooms[room].users.push({ id: user.id, connected: false })
         user.room = room
         logger.info('Joined room')
       }
     } else {
       let newRoom = {
         id: room,
-        users: [user.id],
+        users: [{ id: user.id, connected: false }],
         game: new gamesObjs[gameType].Game(room, io, args),
         // timer: null,
         createdAt: Date.now(),
@@ -307,7 +333,7 @@ app.post('/newgame', (req, res) => {
     let newId = nanoid(8)
     let newRoom = {
       id: newId,
-      users: [user.id],
+      users: [{ id: user.id, connected: false }],
       game: new gamesObjs[gameType].Game(newId, io, args),
       // timer: null,
       createdAt: Date.now(),
@@ -343,7 +369,11 @@ app.get('/exitGame', (req, res) => {
 
     delete rooms[user.room]
   }
-  game.users.splice(game.users.indexOf(user.id), 1)
+  // game.users.splice(game.users.indexOf(user.id), 1)
+  game.users.splice(
+    game.users.findIndex((u) => u.id == user.id),
+    1
+  )
 
   user.room = null
 
@@ -438,8 +468,12 @@ io.on('connection', (socket) => {
 
   if (user.socket) {
     logger.warn('User already connected')
-    return user.socket.disconnect()
+    return socket.disconnect()
   }
+
+  rooms[user.room].users[
+    rooms[user.room].users.findIndex((u) => u.id == user.id)
+  ].connected = true
 
   users[user.id].socket = socket.id
 
@@ -468,16 +502,10 @@ io.on('connection', (socket) => {
   })
 
   socket.on('disconnect', () => {
-    if (user?.room && 1 == 2) {
-      let game = rooms[user.room]
-      if (game.game.leave(user)) delete rooms[user.room]
-
-      game.users.splice(game.users.indexOf(user.id), 1)
-
-      user.room = null
-    }
-
     if (rooms[user.room] != undefined) {
+      rooms[user.room].users[
+        rooms[user.room].users.findIndex((u) => u.id == user.id)
+      ].connected = false
     }
 
     logger.info(

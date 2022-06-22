@@ -405,9 +405,11 @@ const renderEndModel = () => {
   })
 
   if (game.endFilter == 'all') {
-    endModelText.innerHTML = `Game Over`
+    endModelText.innerHTML = `Game Over (${endModelCard.children.length} cards)`
   } else {
-    endModelText.innerHTML = `${game.users[game.endFilter].name}`
+    endModelText.innerHTML = `${game.users[game.endFilter].name} (${
+      endModelCard.children.length
+    } cards)`
   }
 
   if (user.vip) {
