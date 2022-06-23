@@ -24,6 +24,97 @@ cookieButton.addEventListener('click', () => {
   }, 1000)
 })
 
+class Alert {
+  constructor(title, msg) {
+    this.title = title
+    this.msg = msg
+
+    this.alertGroup = document.querySelector('#alertGroup')
+
+    if (this.alertGroup == null) {
+      this.alertGroup = document.createElement('div')
+      this.alertGroup.id = 'alertGroup'
+
+      this.alertGroup.classList.add(
+        'fixed',
+        'inset-0',
+        'z-50',
+        'flex',
+        'flex-col',
+        'items-center',
+        'gap-4',
+        'mt-4',
+        'pointer-events-none'
+      )
+
+      document.body.appendChild(this.alertGroup)
+    }
+
+    this.duration = 3000
+
+    this.alert = document.createElement('div')
+    this.alert.classList.add(
+      'bg-white',
+      'border',
+      'border-gray-300',
+      'rounded-lg',
+
+      'p-4',
+      'w-96',
+      // 'h-32',
+      'h-min',
+      'transition-all',
+      'hover:-translate-y-2',
+      'animate-slideIn'
+    )
+
+    let div2 = document.createElement('div')
+    div2.classList.add('flex', 'flex-col', 'sora')
+
+    let div3 = document.createElement('div')
+    div3.classList.add('text-center', 'text-4xl')
+    div3.innerHTML = this.title
+
+    let div4 = document.createElement('div')
+    div4.classList.add('text-xl')
+    div4.innerHTML = this.msg
+
+    div2.appendChild(div3)
+    div2.appendChild(div4)
+
+    this.alert.appendChild(div2)
+
+    this.show()
+    this.timer = setTimeout(() => {
+      this.hide()
+    }, this.duration)
+  }
+
+  show() {
+    this.alertGroup.appendChild(this.alert)
+    this.alert.addEventListener(
+      'animationend',
+      () => {
+        this.alert.classList.remove('animate-slideIn')
+      },
+      { once: true }
+    )
+  }
+
+  hide() {
+    this.alert.classList.add('animate-slideOut')
+    this.alert.addEventListener(
+      'animationend',
+      () => {
+        this.alert.remove()
+      },
+      { once: true }
+    )
+  }
+}
+
+// new alert('Alert', 'This is an alert')
+
 const getData = async () => {
   const res = await fetch('/userData')
   const data = await res.json()
@@ -95,10 +186,10 @@ const getData = async () => {
     btn.innerText = 'Rejoin'
 
     btn.addEventListener('click', () => {
-      btn.classList.add('animate-spinFast')
-      setTimeout(() => {
-        NewGame(r.id)
-      }, 1000)
+      // btn.classList.add('animate-spinFast')
+      // setTimeout(() => {
+      NewGame(btn, r.id)
+      // }, 1000)
     })
 
     div.appendChild(btn)
@@ -160,10 +251,10 @@ const getData = async () => {
       btn.innerText = 'Join'
 
       btn.addEventListener('click', () => {
-        btn.classList.add('animate-spinFast')
-        setTimeout(() => {
-          NewGame(r.id)
-        }, 1000)
+        // btn.classList.add('animate-spinFast')
+        // setTimeout(() => {
+        NewGame(btn, r.id)
+        // }, 1000)
       })
 
       div.appendChild(btn)
@@ -175,7 +266,7 @@ const getData = async () => {
 
 getData()
 
-const NewGame = async (id = null) => {
+const NewGame = async (btn, id = null) => {
   let body
   if (id == null) {
     body = {
@@ -195,8 +286,13 @@ const NewGame = async (id = null) => {
   if (nameBox.value.length > 0) {
     localStorage.setItem('name', nameBox.value)
   } else {
+    // alert('Please enter a name')
+    new Alert('Error', 'Please enter a name')
     return
   }
+
+  btn.classList.add('animate-spinFast')
+  await new Promise((res) => setTimeout(res, 1000))
 
   const res = await fetch('newGame', {
     method: 'POST',
@@ -210,20 +306,21 @@ const NewGame = async (id = null) => {
 
   console.log(data)
 
+  btn.classList.remove('animate-spinFast')
+
   if (data.ok) {
     window.location.href = `/game/${data.room}`
   } else {
     alert(data.error)
-    joinGame.classList.remove('animate-spinFast')
   }
 }
 
 form.addEventListener('submit', (e) => {
   e.preventDefault()
-  joinGame.classList.add('animate-spinFast')
-  setTimeout(() => {
-    NewGame()
-  }, 1000)
+  // joinGame.classList.add('animate-spinFast')
+  // setTimeout(() => {
+  NewGame(joinGame)
+  // }, 1000)
 })
 
 nameBox.addEventListener('keyup', (e) => {
