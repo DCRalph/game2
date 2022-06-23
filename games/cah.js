@@ -109,10 +109,10 @@ class Game {
   }
 
   socketConnection(user, state, emit = true) {
-    logger.event('socketConnection')
+    logger.event(this, 'socketConnection')
     if (this.users[user]) {
       this.users[user].connected = state
-      logger.event(`${user} ${state ? 'connected' : 'disconnected'}`)
+      logger.event(this, `${user} ${state ? 'connected' : 'disconnected'}`)
       if (emit) this.emitInfo()
     }
   }

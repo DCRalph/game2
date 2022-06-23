@@ -715,6 +715,13 @@ handBar.addEventListener('click', (e) => {
   emit('sel', user.selHand)
 })
 
+// document.addEventListener('keydown', (e) => {
+//   if (game.blackCard == null) return
+//   if (user.submited) return
+//   if (game.userArray[game.turn] == user.id) return
+//   const card = 0
+// })
+
 pickBox.addEventListener('click', (e) => {
   const clicked = e.target.id
   if (clicked == 'pickBox') return

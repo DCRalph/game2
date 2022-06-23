@@ -12,6 +12,8 @@ const runningGames = document.querySelector('#runningGames')
 const cookieThing = document.querySelector('#cookieThing')
 const cookieButton = document.querySelector('#cookieButton')
 
+let makingGame = false
+
 if (localStorage.getItem('cookie') == null || true) {
   cookieThing.classList.remove('hidden')
 }
@@ -267,6 +269,9 @@ const getData = async () => {
 getData()
 
 const NewGame = async (btn, id = null) => {
+  if (makingGame) return
+  makingGame = true
+
   let body
   if (id == null) {
     body = {
@@ -288,6 +293,7 @@ const NewGame = async (btn, id = null) => {
   } else {
     // alert('Please enter a name')
     new Alert('Error', 'Please enter a name')
+    makingGame = false
     return
   }
 
@@ -313,6 +319,7 @@ const NewGame = async (btn, id = null) => {
   } else {
     alert(data.error)
   }
+  makingGame = false
 }
 
 form.addEventListener('submit', (e) => {
