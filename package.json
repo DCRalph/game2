@@ -1,12 +1,12 @@
 {
   "name": "game2",
-  "version": "1.6.26",
+  "version": "1.6.27",
   "description": "",
   "main": "index.js",
   "type": "module",
   "scripts": {
     "start": "node index.js",
-    "run": "nodemon -i 'public/*.*' -i 'games/*.*'",
+    "run": "nodemon --config nodemon.json",
     "css": "npx tailwindcss -c tailwind.config.cjs  -i ./tailwind_config.css -o ./public/tailwind.css -w",
     "push": "git add .; git commit -a -m 'CUM'; git push",
     "patch": "npm version patch --no-git-tag-version; npm run push",

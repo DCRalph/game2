@@ -217,7 +217,7 @@ const makeSel = (n = 0) => {
   return div1
 }
 
-const makeWhiteCard = (white) => {
+const makeWhiteCard = (cards) => {
   let div1 = document.createElement('div')
 
   div1.classList.add(
@@ -234,7 +234,7 @@ const makeWhiteCard = (white) => {
     'relitive'
   )
 
-  white.forEach((text, i) => {
+  cards.forEach((card, i) => {
     let border = i != 0 ? ['border-t-2', 'border-gray-300'] : []
     let div = document.createElement('div')
     div.classList.add(
@@ -246,7 +246,7 @@ const makeWhiteCard = (white) => {
       'py-2',
       'pointer-events-none'
     )
-    div.innerHTML = text
+    div.innerHTML = card.text
 
     div1.appendChild(div)
   })
@@ -254,7 +254,7 @@ const makeWhiteCard = (white) => {
   return div1
 }
 
-const makeBlackCard = (text) => {
+const makeBlackCard = (card) => {
   let div1 = document.createElement('div')
   let div2 = document.createElement('div')
 
@@ -280,7 +280,7 @@ const makeBlackCard = (text) => {
     'py-2',
     'pointer-events-none'
   )
-  div2.innerHTML = text
+  div2.innerHTML = card.text
 
   div1.appendChild(div2)
 
@@ -354,7 +354,7 @@ const renderWonModel = (data) => {
 
   wonModelCard.innerHTML = ''
 
-  wonModelCard.appendChild(makeBlackCard(data.black.text))
+  wonModelCard.appendChild(makeBlackCard(data.black))
   wonModelCard.appendChild(makeWhiteCard(data.white))
 
   wonModel.classList.remove('hidden')
@@ -396,7 +396,7 @@ const renderEndModel = () => {
 
     div1.classList.add('flex', 'flex-wrap', 'justify-center', 'gap-4', 'mt-4')
 
-    div1.appendChild(makeBlackCard(g.black.text))
+    div1.appendChild(makeBlackCard(g.black))
     div1.appendChild(makeWhiteCard(g.white))
 
     mainDiv.appendChild(div1)
@@ -618,12 +618,12 @@ const renderBlack = () => {
   blackCard.innerHTML = ''
 
   if (game.blackCard == null) {
-    blackCard.appendChild(makeBlackCard('No Card'))
+    blackCard.appendChild(makeBlackCard({ text: 'No Card' }))
 
     if (game.status == 'waiting') actionBar.innerHTML = `Waiting...`
     else actionBar.innerHTML = `Waiting for next round...`
   } else {
-    blackCard.appendChild(makeBlackCard(game.blackCard.text))
+    blackCard.appendChild(makeBlackCard(game.blackCard))
     if (game.userArray[game.turn] == user.id)
       actionBar.innerHTML = `Wait for players to pick...`
     else

@@ -1,0 +1,4 @@
+{
+  "ignore": ["public/*", "games/*", "db.json"],
+  "verbose": false
+}

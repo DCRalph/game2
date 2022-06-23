@@ -1,4 +1,5 @@
 import { makePack } from './utils/loadCards.js'
+import analytics from './utils/analytics.js'
 import logger from '../logger.js'
 
 const userScema = {
@@ -143,12 +144,12 @@ class Game {
   socket(data, user) {
     switch (data.cmd) {
       case 'test':
-        this.emit(user.socket, { cmd: 'test' })
+        this.emit(user.socket.id, { cmd: 'test' })
         break
 
       case 'ping':
         {
-          this.emit(user.socket, { cmd: 'pong' })
+          this.emit(user.socket.id, { cmd: 'pong' })
         }
         break
       case 'info':
@@ -172,7 +173,7 @@ class Game {
           }
           this.socketConnection(user.id, true, false)
 
-          this.emit(user.socket, {
+          this.emit(user.socket.id, {
             cmd: 'join',
             data: this.users[user.id],
           })
@@ -226,7 +227,7 @@ class Game {
           logger.event(this, 'Attempting to start game')
 
           if (this.userArray.length < this.players.min) {
-            this.emit(user.socket, {
+            this.emit(user.socket.id, {
               cmd: 'start',
               data: 'Not enough players!',
             })
@@ -234,7 +235,7 @@ class Game {
             return
           }
           if (this.userArray.length > this.players.max) {
-            this.emit(user.socket, {
+            this.emit(user.socket.id, {
               cmd: 'start',
               data: 'Too many players! how tf',
             })
@@ -250,7 +251,7 @@ class Game {
           let everyoneReady = this.userArray.every((id) => this.users[id].ready)
 
           if (!everyoneReady) {
-            this.emit(user.socket, {
+            this.emit(user.socket.id, {
               cmd: 'start',
               data: 'Someone not ready. Try again',
             })
@@ -258,7 +259,7 @@ class Game {
             return
           }
 
-          this.emit(user.socket, { cmd: 'start', data: 'ok' })
+          this.emit(user.socket.id, { cmd: 'start', data: 'ok' })
 
           this.blackCard = this.#black.shift()
           this.status = 'playing'
@@ -330,17 +331,14 @@ class Game {
           this.userArray.forEach((id) => {
             this.users[id].submited = false
 
-            // let tempHand = this.users[id].hand
-            // this.users[id].selHand.forEach((cardIndex) => {
-            //   this.users[id].hand.splice(
-            //     this.users[id].hand.indexOf(tempHand[cardIndex]),
-            //     1
-            //   )
-            // })
-
             let selHand = this.users[id].selHand.sort((a, b) => b - a)
 
             selHand.forEach((i) => {
+              analytics.track(
+                this.users[id].hand[i].id,
+                id == this.users[this.userArray[data.data]].id
+              )
+
               this.users[id].hand.splice(i, 1)
             })
 

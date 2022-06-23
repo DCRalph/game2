@@ -11,10 +11,10 @@ allCards.packs.forEach((pack) => {
   let black = []
 
   pack.white.forEach((card) => {
-    white.push(allCards.white[card])
+    white.push({ text: allCards.white[card], id: card })
   })
   pack.black.forEach((card) => {
-    black.push(allCards.black[card])
+    black.push({ ...allCards.black[card], id: card })
   })
 
   Packs[pack.name] = {
@@ -31,6 +31,7 @@ let packObj = {
   weed: ['Weed Pack'],
   pride: ['Pride Pack'],
   dick: ['Dick'],
+  1: [],
 }
 
 const makePack = (packs = 'default') => {

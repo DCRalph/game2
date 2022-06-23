@@ -90,6 +90,13 @@ class Timer {
   }
 }
 
+const objectMap = (object, mapFn) => {
+  return Object.keys(object).reduce(function (result, key) {
+    result[key] = mapFn(object[key])
+    return result
+  }, {})
+}
+
 const validateUser = (req) => {
   let tok = req.cookies.token
   if (users[tok]) {
@@ -166,7 +173,11 @@ const deadGameTimer = new Timer(handelDeadRooms, TIMEOUT, false)
 app.get('/admin', (req, res) => {
   if (req.query.pwd == '123') {
     let obj = {
-      users,
+      users: objectMap(users, (u) => {
+        u.socket = '[Hidden]'
+        return u
+      }),
+
       rooms,
     }
 
@@ -491,15 +502,15 @@ io.on('connection', (socket) => {
   }
 
   if (user.socket) {
-    logger.warn('User already connected')
-    return socket.disconnect()
+    user.socket.disconnect()
+    logger.warn('User already connected. Disconnected old socket')
   }
 
   rooms[user.room].users[
     rooms[user.room].users.findIndex((u) => u.id == user.id)
   ].connected = true
 
-  users[user.id].socket = socket.id
+  users[user.id].socket = socket
 
   socket.join(user.room)
 
