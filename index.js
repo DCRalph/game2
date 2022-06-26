@@ -16,7 +16,6 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 import { createRequire } from 'module'
-import { log } from 'util'
 const require = createRequire(import.meta.url)
 
 const PORT = 3001
@@ -108,6 +107,7 @@ const validateUser = (req) => {
       name: null,
       socket: null,
       ip: req.headers['x-forwarded-for'] || req.socket.remoteAddress,
+      admin: false,
     }
     users[newUser.id] = newUser
     return newUser
@@ -171,7 +171,36 @@ const handelDeadRooms = () => {
 const deadGameTimer = new Timer(handelDeadRooms, TIMEOUT, false)
 
 app.get('/admin', (req, res) => {
-  if (req.query.pwd == '123') {
+  let user = validateUser(req)
+  if (user.admin) {
+    let obj = {
+      users: objectMap(users, (u) => {
+        u.socket = '[Hidden]'
+        return u
+      }),
+
+      rooms,
+    }
+
+    // res.json(obj)
+    res.sendFile(__dirname + '/admin/index.html')
+  } else {
+    res.status(401).send('Unauthorized')
+  }
+})
+
+app.get('/admin.js', (req, res) => {
+  let user = validateUser(req)
+  if (user.admin) {
+    res.sendFile(__dirname + '/admin/admin.js')
+  } else {
+    res.status(401).send('Unauthorized')
+  }
+})
+
+app.get('/admindata', (req, res) => {
+  let user = validateUser(req)
+  if (user.admin) {
     let obj = {
       users: objectMap(users, (u) => {
         u.socket = '[Hidden]'
@@ -243,13 +272,8 @@ app.post('/newgame', (req, res) => {
   user.name = req.body.name
 
   if (user.name == '' || user.name == undefined) {
-    return res.json({ ok: false, err: 'Name is empty' })
+    return res.json({ ok: false, error: 'Name is empty' })
   }
-
-  logger.info(
-    'New game request from ' +
-      logger.c.magenta(user.name + ' (' + logger.c.yellow(user.id) + ')')
-  )
 
   let gameType = req.body.game
   let room = req.body.room
@@ -261,12 +285,28 @@ app.post('/newgame', (req, res) => {
     let argsArr = argsRaw.split(';')
     for (let arg of argsArr) {
       let key = arg.split('=')[0]
-      let value = arg.split('=')[1]
+      let value = arg.split('=')[1] || ''
       args[key] = value
     }
     // console.log(args)
     // logger.debug(args)
   }
+
+  if (args.admin != undefined) {
+    if (args.admin == '123') {
+      user.admin = !user.admin
+      let text = user.admin ? 'enabled' : 'disabled'
+      res.json({ ok: false, msg: `Admin mode ${text}` })
+    } else {
+      res.json({ ok: false, error: 'Admin mode failed' })
+    }
+    return
+  }
+
+  logger.info(
+    'New game request from ' +
+      logger.c.magenta(user.name + ' (' + logger.c.yellow(user.id) + ')')
+  )
 
   if (user.room) {
     if (rooms[user.room]) {

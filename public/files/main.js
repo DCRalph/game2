@@ -27,9 +27,16 @@ cookieButton.addEventListener('click', () => {
 })
 
 class Alert {
-  constructor(title, msg) {
-    this.title = title
+  constructor(type, msg) {
+    // this.title = title
+
     this.msg = msg
+    this.types = {
+      info: 'border-gray-300',
+      success: 'border-green-500',
+      error: 'border-red-500',
+    }
+    this.type = this.types[type]
 
     this.alertGroup = document.querySelector('#alertGroup')
 
@@ -57,8 +64,9 @@ class Alert {
     this.alert = document.createElement('div')
     this.alert.classList.add(
       'bg-white',
-      'border',
-      'border-gray-300',
+      'border-2',
+      // 'border-green-500',
+      this.type,
       'rounded-lg',
 
       'p-4',
@@ -73,15 +81,15 @@ class Alert {
     let div2 = document.createElement('div')
     div2.classList.add('flex', 'flex-col', 'sora')
 
-    let div3 = document.createElement('div')
-    div3.classList.add('text-center', 'text-4xl')
-    div3.innerHTML = this.title
+    // let div3 = document.createElement('div')
+    // div3.classList.add('text-center', 'text-4xl')
+    // div3.innerHTML = this.title
 
     let div4 = document.createElement('div')
     div4.classList.add('text-xl')
     div4.innerHTML = this.msg
 
-    div2.appendChild(div3)
+    // div2.appendChild(div3)
     div2.appendChild(div4)
 
     this.alert.appendChild(div2)
@@ -292,7 +300,7 @@ const NewGame = async (btn, id = null) => {
     localStorage.setItem('name', nameBox.value)
   } else {
     // alert('Please enter a name')
-    new Alert('Error', 'Please enter a name')
+    new Alert('error', 'Please enter a name')
     makingGame = false
     return
   }
@@ -317,7 +325,12 @@ const NewGame = async (btn, id = null) => {
   if (data.ok) {
     window.location.href = `/game/${data.room}`
   } else {
-    alert(data.error)
+    // alert(data.error)
+    if (data.error) {
+      new Alert('error', data.error)
+    } else if (data.msg) {
+      new Alert('success', data.msg)
+    }
   }
   makingGame = false
 }
