@@ -202,7 +202,7 @@ app.get('/admindata', (req, res) => {
   let user = validateUser(req)
   if (user.admin) {
     let obj = {
-      users: objectMap(structuredClone(users), (u) => {
+      users: objectMap(users, (u) => {
         logger.debug(typeof u.socket)
         u.socket = '[Hidden]'
         return u
