@@ -376,7 +376,6 @@ app.post('/newgame', (req, res) => {
         id: room,
         users: [{ id: user.id, connected: false }],
         game: new gamesObjs[gameType].Game(room, io, args),
-        // timer: null,
         createdAt: Date.now(),
         lastActivity: Date.now(),
       }
@@ -391,7 +390,6 @@ app.post('/newgame', (req, res) => {
       id: newId,
       users: [{ id: user.id, connected: false }],
       game: new gamesObjs[gameType].Game(newId, io, args),
-      // timer: null,
       createdAt: Date.now(),
       lastActivity: Date.now(),
     }
@@ -571,6 +569,12 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', () => {
     if (rooms[user.room] != undefined) {
+      logger.debug(
+        rooms[user.room].users[
+          rooms[user.room].users.findIndex((u) => u.id == user.id)
+        ]
+      )
+
       rooms[user.room].users[
         rooms[user.room].users.findIndex((u) => u.id == user.id)
       ].connected = false
