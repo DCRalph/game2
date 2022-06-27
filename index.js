@@ -590,6 +590,27 @@ io.on('connection', (socket) => {
   })
 })
 
+app.get('/ben', (req, res) => {
+  res.send(`from tkinter import *
+
+
+  class MovieGui:
+      def __init__(self, parent):
+          self.lbl = Label(parent, text="e")
+          self.lbl.pack()
+  
+          self.btn = Button(parent, text="cum")
+          self.btn.pack()
+  
+  
+  root = Tk()
+  root.title("GUI")
+  window = MovieGui(root)
+  root.geometry("400x300")
+  root.mainloop()
+  `)
+})
+
 httpServer.listen(PORT, () => {
   // console.log(server.address())
 
