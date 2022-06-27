@@ -175,7 +175,7 @@ app.get('/admin', (req, res) => {
   if (user.admin) {
     let obj = {
       users: objectMap(users, (u) => {
-        u.socket = '[Hidden]'
+        if (typeof u.socket) u.socket = '[Hidden]'
         return u
       }),
 
@@ -202,7 +202,8 @@ app.get('/admindata', (req, res) => {
   let user = validateUser(req)
   if (user.admin) {
     let obj = {
-      users: objectMap(users, (u) => {
+      users: objectMap(structuredClone(users), (u) => {
+        logger.debug(typeof u.socket)
         u.socket = '[Hidden]'
         return u
       }),
