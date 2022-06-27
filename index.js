@@ -173,18 +173,6 @@ const deadGameTimer = new Timer(handelDeadRooms, TIMEOUT, false)
 app.get('/admin', (req, res) => {
   let user = validateUser(req)
   if (user.admin) {
-    let sendUsers = objectMap(users, (u) => {
-      if (typeof u.socket) u.socket = '[Hidden]'
-      return u
-    })
-
-    let obj = {
-      users: sendUsers,
-
-      rooms,
-    }
-
-    // res.json(obj)
     res.sendFile(__dirname + '/admin/index.html')
   } else {
     res.status(401).send('Unauthorized')
@@ -203,13 +191,14 @@ app.get('/admin.js', (req, res) => {
 app.get('/admindata', (req, res) => {
   let user = validateUser(req)
   if (user.admin) {
+    let sendUsers = objectMap(users, (u) => {
+      if (u.socket != null) u.socket = '[Hidden]'
+
+      return u
+    })
+
     let obj = {
-      users: objectMap(users, (u) => {
-        logger.debug(typeof u.socket)
-        if (u.socket == null) u.socket = '[Hidden]'
-        else u.socket = '[NULL]'
-        return u
-      }),
+      users: sendUsers,
 
       rooms,
     }
