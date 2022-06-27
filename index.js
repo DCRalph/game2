@@ -206,7 +206,8 @@ app.get('/admindata', (req, res) => {
     let obj = {
       users: objectMap(users, (u) => {
         logger.debug(typeof u.socket)
-        u.socket = '[Hidden]'
+        if (u.socket == null) u.socket = '[Hidden]'
+        else u.socket = '[NULL]'
         return u
       }),
 
@@ -545,7 +546,6 @@ io.on('connection', (socket) => {
   }
 
   if (user.socket && user.socket != null) {
-    logger.raw(user.socket)
     user.socket.disconnect()
     logger.warn('User already connected. Disconnected old socket')
   }
