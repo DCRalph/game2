@@ -350,6 +350,8 @@ app.post('/newgame', (req, res) => {
     return
   }
 
+  logger.info('Game type: ' + logger.c.yellow(gameType))
+
   if (room) {
     if (rooms[room]) {
       if (rooms[room].users.length >= rooms[room].game.players.max) {
@@ -537,9 +539,12 @@ io.on('connection', (socket) => {
     logger.warn('User already connected. Disconnected old socket')
   }
 
-  rooms[user.room].users[
-    rooms[user.room].users.findIndex((u) => u.id == user.id)
-  ].connected = true
+  let index = rooms[user.room].users.findIndex((u) => u.id == user.id)
+  if (index != -1) {
+    rooms[user.room].users[index].connected = true
+  } else {
+    logger.warn('User not found in room')
+  }
 
   users[user.id].socket = socket
 
@@ -569,15 +574,10 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', () => {
     if (rooms[user.room] != undefined) {
-      logger.debug(
-        rooms[user.room].users[
-          rooms[user.room].users.findIndex((u) => u.id == user.id)
-        ]
-      )
-
-      rooms[user.room].users[
-        rooms[user.room].users.findIndex((u) => u.id == user.id)
-      ].connected = false
+      let index = rooms[user.room].users.findIndex((u) => u.id == user.id)
+      if (index != -1) {
+        rooms[user.room].users[index].connected = false
+      }
 
       rooms[user.room].game.socketConnection(user.id, false)
     }
