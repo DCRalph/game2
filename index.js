@@ -173,11 +173,13 @@ const deadGameTimer = new Timer(handelDeadRooms, TIMEOUT, false)
 app.get('/admin', (req, res) => {
   let user = validateUser(req)
   if (user.admin) {
+    let sendUsers = objectMap(users, (u) => {
+      if (typeof u.socket) u.socket = '[Hidden]'
+      return u
+    })
+
     let obj = {
-      users: objectMap(users, (u) => {
-        if (typeof u.socket) u.socket = '[Hidden]'
-        return u
-      }),
+      users: sendUsers,
 
       rooms,
     }
