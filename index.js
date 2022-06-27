@@ -543,6 +543,7 @@ io.on('connection', (socket) => {
   }
 
   if (user.socket && user.socket != null) {
+    logger.raw(user.socket)
     user.socket.disconnect()
     logger.warn('User already connected. Disconnected old socket')
   }
