@@ -72,8 +72,9 @@ socket.on('connect', () => {
   setInterval(() => {
     emit('ping')
     ping += 1
-    if (ping > 3) {
-      window.location.href = '/exitGame'
+    if (ping > 5) {
+      // window.location.href = '/exitGame'
+      console.log('ping timeout')
     }
   }, 1000 * 5)
 

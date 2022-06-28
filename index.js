@@ -326,10 +326,14 @@ app.post('/newgame', (req, res) => {
     }
 
     if (user.room) {
-      if (rooms[user.room].game.leave(user)) {
-        logger.info('Delete room ' + logger.c.yellow(user.room))
+      if (rooms[user.room]) {
+        if (rooms[user.room].game.leave(user)) {
+          logger.info('Delete room ' + logger.c.yellow(user.room))
 
-        delete rooms[user.room]
+          delete rooms[user.room]
+        }
+      } else {
+        logger.info('Room not found')
       }
     }
 
@@ -422,7 +426,7 @@ app.get('/exitGame', (req, res) => {
       logger.c.magenta(user.name + ' (' + logger.c.yellow(user.id) + ')')
   )
 
-  if (game.game.leave(user)) {
+  if (game.game.leave(user) == true) {
     logger.info('Delete room ' + logger.c.yellow(user.room))
 
     game.users.forEach((u) => {
