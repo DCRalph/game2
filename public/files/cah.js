@@ -75,6 +75,7 @@ socket.on('connect', () => {
     if (ping > 5) {
       // window.location.href = '/exitGame'
       console.log('ping timeout')
+      location.reload()
     }
   }, 1000 * 5)
 
