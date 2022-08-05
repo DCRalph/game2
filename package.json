@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node index.js",
-    "run": "nodemon --config nodemon.json",
+    "dev": "nodemon --config nodemon.json",
     "css": "npx tailwindcss -c tailwind.config.cjs  -i ./tailwind_config.css -o ./public/tailwind.css -w",
     "push": "git add .; git commit -a -m 'CUM'; git push",
     "patch": "npm version patch --no-git-tag-version; npm run push",
