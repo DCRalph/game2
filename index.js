@@ -199,7 +199,6 @@ app.get('/admindata', (req, res) => {
 
     let obj = {
       users: sendUsers,
-
       rooms,
     }
 
