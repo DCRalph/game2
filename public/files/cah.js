@@ -592,11 +592,15 @@ const renderInfoBoard = () => {
     tbody.appendChild(tr)
   })
 
-  // table2.appendChild(tbody)
+  if (user.vip) {
+    table2.appendChild(tbody)
+  }
 
   infoBoard.innerHTML = ''
   infoBoard.appendChild(table1)
-  // infoBoard.appendChild(table2)
+  if (user.vip) {
+    infoBoard.appendChild(table2)
+  }
 }
 
 const renderNewCard = () => {
