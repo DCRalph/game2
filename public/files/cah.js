@@ -596,7 +596,7 @@ const renderInfoBoard = () => {
 
   infoBoard.innerHTML = ''
   infoBoard.appendChild(table1)
-  infoBoard.appendChild(table2)
+  // infoBoard.appendChild(table2)
 }
 
 const renderNewCard = () => {
