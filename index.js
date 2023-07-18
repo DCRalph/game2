@@ -16,6 +16,7 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 import { createRequire } from 'module'
+import { log } from 'console'
 const require = createRequire(import.meta.url)
 
 const PORT = 3001
@@ -301,11 +302,33 @@ app.post('/newgame', (req, res) => {
   )
 
   if (user.room) {
+    logger.info(
+      'User ' +
+        logger.c.magenta(user.name + ' (' + logger.c.yellow(user.id) + ')') +
+        ' is already in a room'
+    )
+
     if (rooms[user.room]) {
+      logger.info(
+        'User ' +
+          logger.c.magenta(user.name + ' (' + logger.c.yellow(user.id) + ')') +
+          ' is in room ' +
+          logger.c.yellow(user.room) +
+          'room exists'
+      )
       if (
         // rooms[user.room].game.status == 'playing' &&
-        rooms[user.room].users.findIndex((u) => u.id == user.id) != -1
+        rooms[user.room].users.findIndex((u) => u.id == user.id) != -1 // user in room
       ) {
+        logger.info(
+          'User ' +
+            logger.c.magenta(
+              user.name + ' (' + logger.c.yellow(user.id) + ')'
+            ) +
+            ' verified in room ' +
+            logger.c.yellow(user.room)
+        )
+
         // rooms[user.room].users[
         //   rooms[user.room].users.findIndex((u) => u.id == user.id)
         // ].connected = false
@@ -317,10 +340,23 @@ app.post('/newgame', (req, res) => {
 
         return
       }
+      // user not in room
+
+      logger.info(
+        'User ' +
+          logger.c.magenta(user.name + ' (' + logger.c.yellow(user.id) + ')') +
+          ' verified not in room ' +
+          logger.c.yellow(user.room)
+      )
 
       rooms[user.room].users.splice(
         rooms[user.room].users.findIndex((u) => u.id == user.id),
         1
+      )
+      logger.info(
+        `User ${logger.c.magenta(user.name)} (${logger.c.yellow(
+          user.id
+        )}) left room. got removed`
       )
     }
 
@@ -364,7 +400,7 @@ app.post('/newgame', (req, res) => {
         })
         logger.warn('Room is full')
         return
-      } else if (rooms[room].game.status != 'waiting') {
+      } else if (rooms[room].game.status != 'waiting' && false) {
         res.json({
           ok: false,
           error: 'Game is already started',
@@ -374,7 +410,7 @@ app.post('/newgame', (req, res) => {
       } else {
         rooms[room].users.push({ id: user.id, connected: false })
         user.room = room
-        logger.info('Joined room')
+        logger.info('Joined room ' + logger.c.yellow(room))
       }
     } else {
       let newRoom = {
@@ -440,6 +476,12 @@ app.get('/exitGame', (req, res) => {
     game.users.splice(
       game.users.findIndex((u) => u.id == user.id),
       1
+    )
+
+    logger.info(
+      `User ${logger.c.magenta(user.name)} (${logger.c.yellow(
+        user.id
+      )}) left room. got removed`
     )
   }
 
