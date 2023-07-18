@@ -592,7 +592,7 @@ const renderInfoBoard = () => {
     tbody.appendChild(tr)
   })
 
-  table2.appendChild(tbody)
+  // table2.appendChild(tbody)
 
   infoBoard.innerHTML = ''
   infoBoard.appendChild(table1)

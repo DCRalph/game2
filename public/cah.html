@@ -12,16 +12,13 @@
     <div class="fixed z-50 inset-0 hidden" id="model">
       <div class="w-full h-full p-4 md:p-8 lg:p-16 backdrop-blur">
         <div
-          class="w-full h-full flex items-center flex-col bg-gray-800 ring-pink-600 ring-4 rounded-xl"
-        >
+          class="w-full h-full flex items-center flex-col bg-gray-800 ring-pink-600 ring-4 rounded-xl">
           <div
-            class="text-white w-full flex justify-start md:justify-center items-center bg-gray-900 rounded-t-xl text-2xl p-2 relative"
-          >
+            class="text-white w-full flex justify-start md:justify-center items-center bg-gray-900 rounded-t-xl text-2xl p-2 relative">
             <span id="modelTitle" class="sora">Pick who is the best.</span>
             <button
               class="absolute hidden right-0 m-1 flex sora text-lg font-semibold justify-center rounded-lg px-3 py-1 bg-blue-600 shadow-lg shadow-blue-600/50 text-white hover:bg-blue-700 ring-blue-500 active:ring-2"
-              id="modelSubmitBtn"
-            >
+              id="modelSubmitBtn">
               Submit
             </button>
           </div>
@@ -30,17 +27,14 @@
           </div>
           <div
             class="w-full flex flex-wrap justify-center overflow-y-scroll relative p-4 gap-4"
-            id="pickBox"
-          >
+            id="pickBox">
             <div
-              class="hidden w-48 h-72 overflow-y-scroll bg-white ring-4 ring-black rounded-xl"
-            >
+              class="hidden w-48 h-72 overflow-y-scroll bg-white ring-4 ring-black rounded-xl">
               <div class="text-xl font-semibold px-4 py-2 pointer-events-none">
                 ${card}
               </div>
               <div
-                class="text-xl font-semibold px-4 py-2 pointer-events-none border-t-2"
-              >
+                class="text-xl font-semibold px-4 py-2 pointer-events-none border-t-2">
                 ${card}
               </div>
             </div>
@@ -52,18 +46,15 @@
     <div class="fixed z-50 inset-0 hidden" id="wonModel">
       <div class="w-full h-full p-4 md:p-8 lg:p-16 backdrop-blur">
         <div
-          class="w-full h-full flex items-center flex-col bg-gray-800 ring-lime-600 ring-4 rounded-xl"
-        >
+          class="w-full h-full flex items-center flex-col bg-gray-800 ring-lime-600 ring-4 rounded-xl">
           <div
-            class="text-white w-full flex justify-center items-center rounded-t-xl text-2xl p-2 relative border-b-2"
-          >
+            class="text-white w-full flex justify-center items-center rounded-t-xl text-2xl p-2 relative border-b-2">
             <span id="wonModelText" class="sora"></span>
           </div>
 
           <div
             class="w-full flex flex-wrap justify-center overflow-y-scroll p-4 gap-4"
-            id="wonModelCard"
-          >
+            id="wonModelCard">
             <!-- <div
               class="w-48 h-72 shrink-0 rounded-xl bg-black ring-4 ring-white relative select-none"
             >
@@ -92,15 +83,12 @@
     <div class="fixed z-50 inset-0 hidden" id="endModel">
       <div class="w-full h-full p-4 md:p-8 lg:p-16 backdrop-blur">
         <div
-          class="w-full h-full flex items-center flex-col bg-gray-800 ring-teal-600 ring-4 rounded-xl"
-        >
+          class="w-full h-full flex items-center flex-col bg-gray-800 ring-teal-600 ring-4 rounded-xl">
           <div
-            class="text-white w-full flex justify-center items-center rounded-t-xl text-2xl p-2 relative border-b-2 font-semibold"
-          >
+            class="text-white w-full flex justify-center items-center rounded-t-xl text-2xl p-2 relative border-b-2 font-semibold">
             <select
               id="endSelect"
-              class="text-black px-2 text-md ml-2 rounded-lg outline-none ring-0 ring-blue-600 focus:ring-2 absolute left-0"
-            >
+              class="text-black px-2 text-md ml-2 rounded-lg outline-none ring-0 ring-blue-600 focus:ring-2 absolute left-0">
               <option>fuk</option>
             </select>
 
@@ -108,23 +96,20 @@
 
             <button
               class="absolute hidden right-0 m-1 flex sora text-lg font-semibold justify-center rounded-lg px-3 py-1 bg-red-600 shadow-lg shadow-red-600/50 text-white hover:bg-red-700 ring-red-500 active:ring-2"
-              id="endLeave"
-            >
+              id="endLeave">
               Leave
             </button>
           </div>
 
           <div
             class="w-full flex flex-col items-center overflow-y-scroll relative p-4 gap-4"
-            id="endModelCard"
-          ></div>
+            id="endModelCard"></div>
         </div>
       </div>
     </div>
 
     <div
-      class="text-white bg-gray-500 font-semibold text-xl md:text-4xl h-8 md:h-12 flex shrink-0 justify-center items-center"
-    >
+      class="text-white bg-gray-500 font-semibold text-xl md:text-4xl h-8 md:h-12 flex shrink-0 justify-center items-center">
       <a href="/">Cards Against Humanity</a>
     </div>
 
@@ -132,8 +117,7 @@
       <div class="w-full flex border-b-2 md:border-b-0 md:border-r-2">
         <div
           class="w-full flex flex-col md:flex-wrap md:flex-row justify-center items-center gap-4 m-4"
-          id="infoBoard"
-        >
+          id="infoBoard">
           <table class="table-auto rounded-lg bg-white w-64 hidden">
             <thead>
               <tr>
@@ -165,12 +149,10 @@
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 576 512"
-                    class="h-6 w-6 text-yellow-500"
-                  >
+                    class="h-6 w-6 text-yellow-500">
                     <path
                       d="M576 136c0 22.09-17.91 40-40 40c-.248 0-.4551-.1266-.7031-.1305l-50.52 277.9C482 468.9 468.8 480 453.3 480H122.7c-15.46 0-28.72-11.06-31.48-26.27L40.71 175.9C40.46 175.9 40.25 176 39.1 176c-22.09 0-40-17.91-40-40S17.91 96 39.1 96s40 17.91 40 40c0 8.998-3.521 16.89-8.537 23.57l89.63 71.7c15.91 12.73 39.5 7.544 48.61-10.68l57.6-115.2C255.1 98.34 247.1 86.34 247.1 72C247.1 49.91 265.9 32 288 32s39.1 17.91 39.1 40c0 14.34-7.963 26.34-19.3 33.4l57.6 115.2c9.111 18.22 32.71 23.4 48.61 10.68l89.63-71.7C499.5 152.9 496 144.1 496 136C496 113.9 513.9 96 536 96S576 113.9 576 136z"
-                      fill="currentColor"
-                    />
+                      fill="currentColor" />
                   </svg>
 
                   william
@@ -193,37 +175,31 @@
       <div class="w-full flex border-t-2 md:border-t-0 md:border-l-2">
         <div
           class="w-full flex justify-center items-center m-4"
-          id="blackCard"
-        ></div>
+          id="blackCard"></div>
       </div>
     </div>
 
     <div
-      class="flex justify-center items-center w-full h-12 shrink-0 bg-gray-500 relative"
-    >
+      class="flex justify-center items-center w-full h-12 shrink-0 bg-gray-500 relative">
       <div
         class="text-md md:text-2xl font-semibold px-4 py-2 text-white"
-        id="actionBar"
-      ></div>
+        id="actionBar"></div>
 
       <div class="absolute top-0 left-0 h-full flex mx-2 items-center gap-2">
         <button
           class="flex sora font-semibold justify-center rounded-lg px-3 py-1 bg-red-600 shadow-lg shadow-red-600/50 text-white hover:bg-red-700 ring-red-500 active:ring-2"
-          id="leave"
-        >
+          id="leave">
           Leave
         </button>
 
         <button
           class="hidden flex sora font-semibold justify-center rounded-lg px-3 py-1 bg-green-600 shadow-lg shadow-green-600/50 text-white hover:bg-green-700 ring-green-500 active:ring-2"
-          id="startBtn"
-        >
+          id="startBtn">
           Start
         </button>
         <button
           class="hidden flex sora font-semibold justify-center rounded-lg px-3 py-1 bg-red-600 shadow-lg shadow-red-600/50 text-white hover:bg-red-700 ring-red-500 active:ring-2"
-          id="endBtn"
-        >
+          id="endBtn">
           End Game
         </button>
       </div>
@@ -238,15 +214,13 @@
 
         <button
           class="hidden flex sora font-semibold justify-center rounded-lg px-3 py-1 bg-teal-600 shadow-lg shadow-teal-600/50 text-white hover:bg-teal-700 ring-teal-500 active:ring-2"
-          id="newCard"
-        >
+          id="newCard">
           New Card
         </button>
 
         <button
           class="hidden flex sora font-semibold justify-center rounded-lg px-3 py-1 bg-blue-600 shadow-lg shadow-blue-600/50 text-white hover:bg-blue-700 ring-blue-500 active:ring-2"
-          id="submitBtn"
-        >
+          id="submitBtn">
           Submit
         </button>
       </div>
@@ -255,43 +229,35 @@
     <div class="w-full flex shrink-0 relative" id="handBar">
       <div
         class="flex w-full justify-between p-4 gap-4 overflow-x-scroll"
-        id="handBarCards"
-      ></div>
+        id="handBarCards"></div>
       <div
-        class="hidden absolute z-20 w-full top-0 bottom-0 bg-opacity-50 bg-gray-500 pointer-events-none"
-      >
+        class="hidden absolute z-20 w-full top-0 bottom-0 bg-opacity-50 bg-gray-500 pointer-events-none">
         <div
-          class="absolute z-30 text-white text-4xl inset-0 flex flex-col justify-center items-center pointer-events-none"
-        >
+          class="absolute z-30 text-white text-4xl inset-0 flex flex-col justify-center items-center pointer-events-none">
           Submited
         </div>
       </div>
 
       <div
-        class="hidden m-4 w-96 mx-96 shrink-0 rounded-xl bg-white ring-4 ring-black relative select-none"
-      >
+        class="hidden m-4 w-96 mx-96 shrink-0 rounded-xl bg-white ring-4 ring-black relative select-none">
         <div class="text-xl font-semibold px-4 py-2 pointer-events-none">
           ${title}
         </div>
         <div
-          class="absolute inset-0 opacity-50 rounded-xl bg-green-500 pointer-events-none"
-        ></div>
+          class="absolute inset-0 opacity-50 rounded-xl bg-green-500 pointer-events-none"></div>
         <div
-          class="absolute inset-0 flex flex-col justify-center items-center pointer-events-none"
-        >
+          class="absolute inset-0 flex flex-col justify-center items-center pointer-events-none">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             class="h-20 w-20"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
-            stroke-width="2"
-          >
+            stroke-width="2">
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
-              d="M5 13l4 4L19 7"
-            />
+              d="M5 13l4 4L19 7" />
           </svg>
           <span class="text-3xl">${n}</span>
         </div>
