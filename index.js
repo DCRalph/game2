@@ -314,7 +314,7 @@ app.post('/newgame', (req, res) => {
           logger.c.magenta(user.name + ' (' + logger.c.yellow(user.id) + ')') +
           ' is in room ' +
           logger.c.yellow(user.room) +
-          'room exists'
+          ' room exists'
       )
       if (
         // rooms[user.room].game.status == 'playing' &&

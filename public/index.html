@@ -13,24 +13,20 @@
   <body class="bg-gray-800 flex flex-col items-center">
     <div class="fixed bottom-0 mb-4 hidden mx-4" id="cookieThing">
       <div
-        class="flex relative bg-white rounded-lg items-center gap-4 pl-14 md:pl-24 p-2"
-      >
+        class="flex relative bg-white rounded-lg items-center gap-4 pl-14 md:pl-24 p-2">
         <div
-          class="h-10 md:h-20 aspect-square top-2 md:-top-6 left-2 absolute animate-wiggle"
-        >
+          class="h-10 md:h-20 aspect-square top-2 md:-top-6 left-2 absolute animate-wiggle">
           <img
             class="object-cover w-full h-full bottom-10"
             src="/files/cookie.png"
-            alt=""
-          />
+            alt="" />
         </div>
         <span class="text-sm md:text-lg text-center"
           >We use cookies to improve your experience.</span
         >
         <button
           class="flex sora font-semibold justify-center rounded-lg px-4 py-2 bg-green-600 shadow-lg shadow-green-600/50 text-white hover:bg-green-700 ring-green-500 active:ring-2"
-          id="cookieButton"
-        >
+          id="cookieButton">
           Agree
         </button>
       </div>
@@ -45,14 +41,15 @@
         >
       </div>
 
+      <div class="w-96 p-4 flex flex-col gap-4" id="runningGames"></div>
+
       <div class="mt-8 w-full">
         <label for="nameBox" class="text-lg font-medium text-white">Name</label>
         <input
           type="text"
           id="nameBox"
           autocomplete="given-name"
-          class="mt-1 py-2 px-3 w-full ring-0 ring-blue-600 focus:ring-2 shadow rounded-md outline-none"
-        />
+          class="mt-1 py-2 px-3 w-full ring-0 ring-blue-600 focus:ring-2 shadow rounded-md outline-none" />
       </div>
 
       <div class="mt-4 w-full">
@@ -62,16 +59,14 @@
         <input
           type="text"
           id="roomBox"
-          class="mt-1 py-2 px-3 w-full ring-0 ring-blue-600 focus:ring-2 shadow rounded-md outline-none"
-        />
+          class="mt-1 py-2 px-3 w-full ring-0 ring-blue-600 focus:ring-2 shadow rounded-md outline-none" />
       </div>
 
       <div class="w-full mt-4">
         <label for="gameBox" class="text-lg font-medium text-white">Game</label>
         <select
           id="gameBox"
-          class="mt-1 w-full py-2 px-3 bg-white rounded shadow outline-none ring-0 ring-blue-600 focus:ring-2"
-        >
+          class="mt-1 w-full py-2 px-3 bg-white rounded shadow outline-none ring-0 ring-blue-600 focus:ring-2">
           <!-- <option>Select a game</option> -->
         </select>
       </div>
@@ -83,8 +78,7 @@
         <input
           type="text"
           id="argsBox"
-          class="mt-1 py-2 px-3 w-full ring-0 ring-blue-600 focus:ring-2 shadow rounded-md outline-none"
-        />
+          class="mt-1 py-2 px-3 w-full ring-0 ring-blue-600 focus:ring-2 shadow rounded-md outline-none" />
       </div>
 
       <div class="flex justify-around w-full mt-8">
@@ -98,8 +92,7 @@
         <button
           class="flex sora font-semibold justify-center rounded-lg px-4 py-2 bg-blue-600 shadow-lg shadow-blue-600/50 text-white hover:bg-blue-700 ring-blue-500 active:ring-2"
           id="joinGame"
-          type="submit"
-        >
+          type="submit">
           Join Game
         </button>
 
@@ -111,8 +104,6 @@
         </button> -->
       </div>
     </form>
-
-    <div class="w-96 p-4 flex flex-col gap-4" id="runningGames"></div>
 
     <script src="/files/main.js"></script>
   </body>
