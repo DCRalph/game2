@@ -3,8 +3,7 @@ const handBarCards = document.querySelector('#handBarCards')
 const actionBar = document.querySelector('#actionBar')
 
 const leave = document.querySelectorAll('#leave')
-const startBtn = document.querySelector('#startBtn')
-const endBtn = document.querySelector('#endBtn')
+
 const submitBtn = document.querySelector('#submitBtn')
 
 const infoBoard = document.querySelector('#infoBoard')
@@ -27,6 +26,9 @@ const endModelText = document.querySelector('#endModelText')
 const endSelect = document.querySelector('#endSelect')
 const endModelCard = document.querySelector('#endModelCard')
 const endLeave = document.querySelector('#endLeave')
+
+const startBtn = document.createElement('button')
+const endBtn = document.createElement('button')
 
 ////////////////////////////////////////////
 
@@ -592,14 +594,82 @@ const renderInfoBoard = () => {
     tbody.appendChild(tr)
   })
 
+  let buttonDiv
+
   if (user.vip) {
     table2.appendChild(tbody)
+
+    // <button
+    //       class="hidden flex sora font-semibold justify-center rounded-lg px-3 py-1 bg-green-600 shadow-lg shadow-green-600/50 text-white hover:bg-green-700 ring-green-500 active:ring-2"
+    //       id="startBtn">
+    //       Start
+    //     </button>
+    //     <button
+    //       class="hidden flex sora font-semibold justify-center rounded-lg px-3 py-1 bg-red-600 shadow-lg shadow-red-600/50 text-white hover:bg-red-700 ring-red-500 active:ring-2"
+    //       id="endBtn">
+    //       End Game
+    //     </button>
+
+    buttonDiv = document.createElement('div')
+    buttonDiv.classList.add('flex', 'gap-2', 'w-full', 'justify-center')
+    buttonDiv.id = 'buttonDiv'
+
+    startBtn.classList.add(
+      'flex',
+      'sora',
+      'font-semibold',
+      'justify-center',
+      'rounded-lg',
+      'px-3',
+      'py-1',
+      'bg-green-600',
+      'shadow-lg',
+      'shadow-green-600/50',
+      'text-white',
+      'hover:bg-green-700',
+      'ring-green-500',
+      'active:ring-2'
+    )
+    startBtn.id = 'startBtn'
+    startBtn.innerHTML = 'Start'
+
+    buttonDiv.appendChild(startBtn)
+
+    endBtn.classList.add(
+      'flex',
+      'sora',
+      'font-semibold',
+      'justify-center',
+      'rounded-lg',
+      'px-3',
+      'py-1',
+      'bg-red-600',
+      'shadow-lg',
+      'shadow-red-600/50',
+      'text-white',
+      'hover:bg-red-700',
+      'ring-red-500',
+      'active:ring-2'
+    )
+    endBtn.id = 'endBtn'
+    endBtn.innerHTML = 'End Game'
+
+    buttonDiv.appendChild(endBtn)
+
+    startBtn.addEventListener('click', () => {
+      emit('start')
+    })
+
+    endBtn.addEventListener('click', () => {
+      emit('end')
+    })
   }
 
   infoBoard.innerHTML = ''
   infoBoard.appendChild(table1)
   if (user.vip) {
     infoBoard.appendChild(table2)
+    infoBoard.appendChild(buttonDiv)
   }
 }
 
@@ -745,14 +815,6 @@ modelSubmitBtn.addEventListener('click', () => {
   emit('choose', game.selModel)
   modelSubmitBtn.classList.add('hidden')
   // hideModel()
-})
-
-startBtn.addEventListener('click', () => {
-  emit('start')
-})
-
-endBtn.addEventListener('click', () => {
-  emit('end')
 })
 
 submitBtn.addEventListener('click', () => {
