@@ -28,6 +28,8 @@ class Game {
     this.roomid = roomid
     this.#io = io
 
+    this.handAmmount = args.handAmmount | 5
+
     this.name = 'Cards Against Humanity'
     this.file = 'cah.html'
     this.players = {
@@ -162,7 +164,7 @@ class Game {
             this.users[user.id] = structuredClone(userScema)
             this.users[user.id].id = user.id
             this.users[user.id].name = user.name
-            this.users[user.id].hand = this.#white.splice(0, 5)
+            this.users[user.id].hand = this.#white.splice(0, this.handAmmount)
 
             this.userArray.push(user.id)
             if (this.vip == null) {
@@ -344,9 +346,9 @@ class Game {
 
             this.users[id].selHand = []
 
-            if (this.users[id].hand.length != 5) {
+            if (this.users[id].hand.length != this.handAmmount) {
               this.users[id].hand.push(
-                ...this.#white.splice(0, 5 - this.users[id].hand.length)
+                ...this.#white.splice(0, this.handAmmount - this.users[id].hand.length)
               )
             }
           })
