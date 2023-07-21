@@ -28,7 +28,7 @@ class Game {
     this.roomid = roomid
     this.#io = io
 
-    this.handAmmount = args.handAmmount | 5
+    this.handAmmount = parseInt(args.handAmmount) || 5
 
     this.name = 'Cards Against Humanity'
     this.file = 'cah.html'
